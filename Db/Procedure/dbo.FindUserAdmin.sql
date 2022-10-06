@@ -1,0 +1,6 @@
+﻿CREATE PROCEDURE [FindUserAdmin]
+AS
+BEGIN
+	SELECT Id FROM Users
+	WHERE Admin = 1
+END

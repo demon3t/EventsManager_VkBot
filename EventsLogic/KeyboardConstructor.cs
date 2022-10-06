@@ -91,13 +91,8 @@ namespace EventsLogic
             using (SqlConnection connection = new SqlConnection(connectionDbString))
             {
                 connection.Open();
-                SendMessage(e, $"\tСтрока подключения: {connection.ConnectionString}\n\tБаза данных: {connection.Database}\n\tСервер: {connection.DataSource}\n\tСостояние: {connection.State}");
-                Console.WriteLine($"\tСтрока подключения: {connection.ConnectionString}");
-                Console.WriteLine($"\tБаза данных: {connection.Database}");
-                Console.WriteLine($"\tСервер: {connection.DataSource}");
-                Console.WriteLine($"\tСостояние: {connection.State}");
-
-
+                SendMessage(e, $"Строка подключения: {connection.ConnectionString}\nБаза данных: {connection.Database}\nСервер: {connection.DataSource}\nСостояние: {connection.State}");
+                Console.WriteLine($"Строка подключения: {connection.ConnectionString}\nБаза данных: {connection.Database}\nСервер: {connection.DataSource}\nСостояние: {connection.State}");
             }
             Console.WriteLine("Подключение закрыто");
         }
