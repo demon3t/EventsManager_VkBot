@@ -14,6 +14,30 @@ namespace EventsLogic
         public static VkBot? vkBot { private get; set; }
         public static string connectionDbString { private get; set; } = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Nipa\\source\\repos\\vkBot\\EventsLogic\\Database.mdf;Integrated Security=True";
 
+        private static void SendMessage(MessageReceivedEventArgs e, string message, KeyboardBuilder keyboard)
+        {
+            if (vkBot == null) return;
+
+            vkBot.Api.Messages.Send(new MessagesSendParams()
+            {
+                Message = message,
+                PeerId = e.Message.PeerId,
+                RandomId = Environment.TickCount,
+                Keyboard = keyboard.Build()
+            });
+        }
+        private static void SendMessage(MessageReceivedEventArgs e, string message)
+        {
+            if (vkBot == null) return;
+
+            vkBot.Api.Messages.Send(new MessagesSendParams()
+            {
+                Message = message,
+                PeerId = e.Message.PeerId,
+                RandomId = Environment.TickCount,
+            });
+        }
+
         public static void ButtonBegin(MessageReceivedEventArgs e)
         {
             if (vkBot == null) return;
@@ -22,13 +46,7 @@ namespace EventsLogic
                 .AddButton("Информация", "", KeyboardButtonColor.Default)
                 .AddButton("Я всё знаю", "", KeyboardButtonColor.Positive).SetOneTime();
 
-            vkBot.Api.Messages.Send(new MessagesSendParams()
-            {
-                Message = "Привет, уже был здесь?",
-                PeerId = e.Message.PeerId,
-                RandomId = Environment.TickCount,
-                Keyboard = keyboard.Build()
-            });
+            SendMessage(e, "Привет, уже был здесь?", keyboard);
         }
 
         public static void ButtonInfo(MessageReceivedEventArgs e)
@@ -38,14 +56,7 @@ namespace EventsLogic
             KeyboardBuilder keyboard = (KeyboardBuilder)new KeyboardBuilder()
                 .AddButton("Я всё знаю", "", KeyboardButtonColor.Positive).SetOneTime();
 
-            vkBot.Api.Messages.Send(new MessagesSendParams()
-            {
-                Message = $"\tПривет {1}.Данный бот может оповещать и записывать на доступные мероприятия." +
-                    "А так же напоминать о мероприятиях на которые Вы записались.",
-                PeerId = e.Message.PeerId,
-                RandomId = Environment.TickCount,
-                Keyboard = keyboard.Build()
-            });
+            SendMessage(e, $"\tПривет {1}.Данный бот может оповещать и записывать на доступные мероприятия. А так же напоминать о мероприятиях на которые Вы записались.", keyboard);
         }
 
         public static void ButtonKnown(MessageReceivedEventArgs e)
@@ -58,13 +69,7 @@ namespace EventsLogic
                 .AddButton("Мои мероприятия", "", KeyboardButtonColor.Primary)
                 .AddButton("Завершённые мероприятия", "", KeyboardButtonColor.Default).SetOneTime();
 
-            vkBot.Api.Messages.Send(new MessagesSendParams()
-            {
-                Message = "Тогда продолжим.\nЧто ты хочешь сделать?",
-                PeerId = e.Message.PeerId,
-                RandomId = Environment.TickCount,
-                Keyboard = keyboard.Build()
-            });
+            SendMessage(e, "Тогда продолжим.\nЧто ты хочешь сделать?", keyboard);
         }
 
         public static void ButtonLookEvents(MessageReceivedEventArgs e)
@@ -73,13 +78,7 @@ namespace EventsLogic
 
             LookEventsButtons(out KeyboardBuilder keyboard);
 
-            vkBot.Api.Messages.Send(new MessagesSendParams()
-            {
-                Message = "Вот все доступные мероприятия",
-                PeerId = e.Message.PeerId,
-                RandomId = Environment.TickCount,
-                Keyboard = keyboard.Build()
-            });
+            SendMessage(e, "Вот все доступные мероприятия", keyboard);
         }
 
         public static void CheckEvents(MessageReceivedEventArgs e)
@@ -102,5 +101,23 @@ namespace EventsLogic
             return keyboard;
         }
 
+
+        /// <summary>
+        /// приколюха
+        /// </summary>
+        /// <param name="e"></param>
+        public static void HELLOW(MessageReceivedEventArgs e)
+        {
+            if (vkBot == null) return;
+
+            SendMessage(e, "Здарова");
+            SendMessage(e, "Привет");
+            SendMessage(e, "хеллоу");
+            SendMessage(e, "What up?");
+            SendMessage(e, "Бонжур");
+        }
     }
+
+
+    
 }
