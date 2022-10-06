@@ -12,6 +12,7 @@ namespace vkBot
     {
         private static VkBot vkBot = new VkBot(config.Token, config.URL);
 
+
         static void Main(string[] args)
         {
             KeyboardConstructor.vkBot = vkBot;
@@ -23,11 +24,16 @@ namespace vkBot
 
         private static void VkBot_OnBotStarted(object sender, EventArgs e)
         {
+            Console.WriteLine($"{DateTime.Now}: Bot started");
             vkBot.OnMessageReceived += VkBot_OnMessageReceived;
         }
 
         private static void VkBot_OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
+            DatabaseLogic.AddUser(e.Message.PeerId.ToString(), "Данила", "Садырин", true, true, true);
+
+
+            Console.WriteLine($"{DateTime.Now}_{e.Message.PeerId}: {e.Message.Text}");
             switch (e.Message.Text.ToUpper())
             {
                 case "НАЧАТЬ":

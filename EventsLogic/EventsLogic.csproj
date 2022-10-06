@@ -6,22 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Database.mdf" />
-    <None Remove="Database_log.ldf" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Database.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Database_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.0" />
     <PackageReference Include="VkBotFramework" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Database.mdf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Database_log.ldf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

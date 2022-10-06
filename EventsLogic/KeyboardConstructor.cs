@@ -6,6 +6,7 @@ using VkNet.Model.RequestParams;
 using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 using VkBotFramework.Models;
+using System.Threading;
 
 namespace EventsLogic
 {
@@ -76,9 +77,11 @@ namespace EventsLogic
         {
             if (vkBot == null) return;
 
-            LookEventsButtons(out KeyboardBuilder keyboard);
+            LookEventsButtons(out KeyboardBuilder keyboard, e);
 
-            SendMessage(e, "Вот все доступные мероприятия", keyboard);
+
+
+            SendMessage(e, "Вот все доступные мероприятия");
         }
 
         public static void CheckEvents(MessageReceivedEventArgs e)
@@ -86,19 +89,22 @@ namespace EventsLogic
             if (vkBot == null) return;
         }
 
-        private static KeyboardBuilder LookEventsButtons(out KeyboardBuilder keyboard)
+        private static void LookEventsButtons(out KeyboardBuilder keyboard, MessageReceivedEventArgs e)
         {
-            keyboard = new KeyboardBuilder();
-            string buttonName = "Some Event";
+            keyboard = (KeyboardBuilder)new KeyboardBuilder().AddButton("Я всё знаю","",KeyboardButtonColor.Primary);
 
             using (SqlConnection connection = new SqlConnection(connectionDbString))
             {
                 connection.Open();
-                buttonName = connection.Database;
-            }
-            keyboard.AddButton(buttonName.Substring(0, 40), "", KeyboardButtonColor.Default).SetOneTime();
+                SendMessage(e, $"\tСтрока подключения: {connection.ConnectionString}\n\tБаза данных: {connection.Database}\n\tСервер: {connection.DataSource}\n\tСостояние: {connection.State}");
+                Console.WriteLine($"\tСтрока подключения: {connection.ConnectionString}");
+                Console.WriteLine($"\tБаза данных: {connection.Database}");
+                Console.WriteLine($"\tСервер: {connection.DataSource}");
+                Console.WriteLine($"\tСостояние: {connection.State}");
 
-            return keyboard;
+
+            }
+            Console.WriteLine("Подключение закрыто");
         }
 
 
@@ -119,5 +125,5 @@ namespace EventsLogic
     }
 
 
-    
+
 }
