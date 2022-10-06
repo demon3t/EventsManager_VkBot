@@ -1,6 +1,3 @@
-﻿
-
-using Microsoft.Data.SqlClient;
 using System;
 
 namespace EventsLogic

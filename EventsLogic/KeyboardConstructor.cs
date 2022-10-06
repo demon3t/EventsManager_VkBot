@@ -84,11 +84,6 @@ namespace EventsLogic
             SendMessage(e, "Вот все доступные мероприятия");
         }
 
-        public static void CheckEvents(MessageReceivedEventArgs e)
-        {
-            if (vkBot == null) return;
-        }
-
         private static void LookEventsButtons(out KeyboardBuilder keyboard, MessageReceivedEventArgs e)
         {
             keyboard = (KeyboardBuilder)new KeyboardBuilder().AddButton("Я всё знаю","",KeyboardButtonColor.Primary);
@@ -106,24 +101,5 @@ namespace EventsLogic
             }
             Console.WriteLine("Подключение закрыто");
         }
-
-
-        /// <summary>
-        /// приколюха
-        /// </summary>
-        /// <param name="e"></param>
-        public static void HELLOW(MessageReceivedEventArgs e)
-        {
-            if (vkBot == null) return;
-
-            SendMessage(e, "Здарова");
-            SendMessage(e, "Привет");
-            SendMessage(e, "хеллоу");
-            SendMessage(e, "What up?");
-            SendMessage(e, "Бонжур");
-        }
     }
-
-
-
 }
