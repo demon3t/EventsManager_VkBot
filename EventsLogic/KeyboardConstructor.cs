@@ -12,7 +12,6 @@ namespace EventsLogic
     static public class KeyboardConstructor
     {
         public static VkBot? vkBot { private get; set; }
-
         public static string connectionDbString { private get; set; } = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Nipa\\source\\repos\\vkBot\\EventsLogic\\Database.mdf;Integrated Security=True";
 
         public static void ButtonBegin(MessageReceivedEventArgs e)
