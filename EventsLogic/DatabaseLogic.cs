@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace EventsLogic
 {
@@ -16,20 +18,7 @@ namespace EventsLogic
         /// <param name="id"> Уникальный идентификатор пользователя. </param>
         /// <param name="name"> Имя пользователя. </param>
         /// <param name="surname"> Фамилия пользователя. </param>
-        /// <param name="admin"> Является ли пользователь админом. </param>
-        /// <param name="make"> Может ли пользователь создавать мероприятия. </param>
-        /// <param name="mark"> Может ли пользователь отмечать волонтёров. </param>
-        public static void AddUser(string id, string? name, string? surname, bool admin, bool make, bool mark)
-        {
-            string sqlExpression = "InsertUser";
-
-        /// <summary>
-        /// Добавляет пользователя в базу данных.
-        /// </summary>
-        /// <param name="id"> Уникальный идентификатор пользователя. </param>
-        /// <param name="name"> Имя пользователя. </param>
-        /// <param name="surname"> Фамилия пользователя. </param>
-        /// <param name="admin"> Является ли пользователь админом (если true ,то make = true и mark = true; false аналогично). </param>
+        /// <param name="admin"> Является ли пользователь админом (если true ,то mark = true; false аналогично). </param>
         public static void AddUser(string id, string? name, string? surname, bool admin)
         {
             string sqlExpression = "InsertUser";
@@ -41,49 +30,20 @@ namespace EventsLogic
 
                 command.CommandType = System.Data.CommandType.StoredProcedure;
 
-                SqlParameter idParam = new SqlParameter
-                {
-                    ParameterName = "@Id",
-                    Value = id
-                };
-                command.Parameters.Add(idParam);
-                SqlParameter nameParam = new SqlParameter
-                {
-                    ParameterName = "@Name",
-                    Value = name
-                };
-                command.Parameters.Add(nameParam);
-                SqlParameter surnameParam = new SqlParameter
-                {
-                    ParameterName = "@Surname",
-                    Value = surname
-                };
-                command.Parameters.Add(surnameParam);
-                SqlParameter adminParam = new SqlParameter
-                {
-                    ParameterName = "@Admin",
-                    Value = admin
-                };
-                command.Parameters.Add(adminParam);
-                SqlParameter makeParam = new SqlParameter
-                {
-                    ParameterName = "@Make",
-                    Value = admin
-                };
-                command.Parameters.Add(makeParam);
-                SqlParameter markParam = new SqlParameter
-                {
-                    ParameterName = "@Mark",
-                    Value = admin
-                };
-                command.Parameters.Add(markParam);
+                command.Parameters.Add(ParameterRegistrer(id, "@Id"));
+                command.Parameters.Add(ParameterRegistrer(name, "@Name"));
+                command.Parameters.Add(ParameterRegistrer(surname, "@Surname"));
+                command.Parameters.Add(ParameterRegistrer(admin, "@Admin"));
+                command.Parameters.Add(ParameterRegistrer(false, "@Make"));
+                command.Parameters.Add(ParameterRegistrer(0, "@MakeState"));
+                command.Parameters.Add(ParameterRegistrer(admin, "@Mark"));
                 var result = command.ExecuteScalar();
+
                 Console.WriteLine($"Id добавленного объекта:{result}");
             }
         }
 
         #endregion
-
 
         /// <summary>
         /// Проверка наличия пользователя в базе данных.
@@ -92,7 +52,7 @@ namespace EventsLogic
         /// <returns> True - пользователь есть в базе данных, false - нету. </returns>
         public static bool CheckUserToId(string id)
         {
-            string sqlExpression = "GetKeyUser";
+            string sqlExpression = "CheckKeyUser";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -184,9 +144,52 @@ namespace EventsLogic
             }
         }
 
-        public static void AboutMe(string id)
+        public static string AboutMe(string id)
         {
-            
+            User user = GetUsersByProcedure("UserInfo", id, "@Id").First();
+            return $"Id: {user.Id}\nИмя: {user.Name}\nФамилия: {user.SurName}\nАдминистратор: {user.IsAdmin}\nПомощник: {user.IsMark}";
+        }
+
+        private static SqlParameter ParameterRegistrer(object? value, string paramName)
+        {
+            return new SqlParameter
+            {
+                ParameterName = paramName,
+                Value = value
+            };
+        }
+        private static List<User> GetUsersByProcedure(string sqlExpression, object param1, string name1)
+        {
+            var users = new List<User>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                command.Parameters.Add(ParameterRegistrer(param1, name1));
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                for (int i = 0; i < int.MaxValue; i++)
+                    if (reader.Read())
+                    {
+                        users.Add(new User()
+                        {
+                            Id = (string)reader["Id"],
+                            Name = (string)reader["Name"],
+                            SurName = (string)reader["Surname"],
+                            IsAdmin = (bool)reader["Admin"],
+                            IsMake = (bool)reader["Make"],
+                            IsMark = (bool)reader["Mark"]
+                        });
+                    }
+                    else break;
+            }
+
+            return users;
         }
     }
 }

@@ -60,6 +60,24 @@ namespace EventsLogic
             SendMessage(e, $"\tПривет {1}.Данный бот может оповещать и записывать на доступные мероприятия. А так же напоминать о мероприятиях на которые Вы записались.", keyboard);
         }
 
+        public static void ButtonAboutMe(MessageReceivedEventArgs e)
+        {
+            if (vkBot == null) return;
+
+            KeyboardBuilder keyboard = (KeyboardBuilder)new KeyboardBuilder()
+                .AddButton("Посмотреть мероприятия", "", KeyboardButtonColor.Positive)
+                .AddLine()
+                .AddButton("Мои мероприятия", "", KeyboardButtonColor.Primary)
+                .AddButton("Завершённые мероприятия", "", KeyboardButtonColor.Default).SetOneTime()
+                .AddLine()
+                .AddButton("Информация", "", KeyboardButtonColor.Default)
+                .AddButton("Обо мне", "", KeyboardButtonColor.Default);
+
+            string message = DatabaseLogic.AboutMe(e.Message.PeerId.ToString());
+
+            SendMessage(e, message, keyboard);
+        }
+
         public static void ButtonKnown(MessageReceivedEventArgs e)
         {
             if (vkBot == null) return;
@@ -68,7 +86,10 @@ namespace EventsLogic
                 .AddButton("Посмотреть мероприятия", "", KeyboardButtonColor.Positive)
                 .AddLine()
                 .AddButton("Мои мероприятия", "", KeyboardButtonColor.Primary)
-                .AddButton("Завершённые мероприятия", "", KeyboardButtonColor.Default).SetOneTime();
+                .AddButton("Завершённые мероприятия", "", KeyboardButtonColor.Default).SetOneTime()
+                .AddLine()
+                .AddButton("Информация", "", KeyboardButtonColor.Default)
+                .AddButton("Обо мне", "", KeyboardButtonColor.Default);
 
             SendMessage(e, "Тогда продолжим.\nЧто ты хочешь сделать?", keyboard);
         }

@@ -1,6 +1,7 @@
 ﻿using EventsLogic;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using VkBotFramework;
 using VkBotFramework.Models;
 using VkNet.Model;
@@ -36,6 +37,9 @@ namespace vkBot
             if (!DatabaseLogic.CheckUserToId(e.Message.PeerId.ToString()))
                 DatabaseLogic.AddUser(e.Message.PeerId.ToString(), "User", "Subuser", false);
 
+            if (makeList.Contains(e.Message.PeerId.ToString()))
+                MakeEvent(sender, e);
+
             Console.WriteLine($"{DateTime.Now}_{e.Message.PeerId}: {e.Message.Text}");
             switch (e.Message.Text.ToUpper())
             {
@@ -48,6 +52,11 @@ namespace vkBot
                 case "ИНФОРМАЦИЯ":
                     {
                         KeyboardConstructor.ButtonInfo(e);
+                        break;
+                    }
+                case "ОБО МНЕ":
+                    {
+                        KeyboardConstructor.ButtonAboutMe(e);
                         break;
                     }
                 case "Я ВСЁ ЗНАЮ":
@@ -65,6 +74,11 @@ namespace vkBot
                         break;
                     }
             }
+        }
+
+        private static void MakeEvent(object sender, MessageReceivedEventArgs e)
+        {
+
         }
     }
 }
