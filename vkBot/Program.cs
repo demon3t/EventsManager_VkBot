@@ -62,7 +62,6 @@ namespace vkBot
                         break;
                     }
             }
-            Console.WriteLine($"{e.Message.UpdateTime}: {e.Message.Text}");
         }
     }
 }
