@@ -79,8 +79,6 @@ namespace EventsLogic
 
             LookEventsButtons(out KeyboardBuilder keyboard, e);
 
-
-
             SendMessage(e, "Вот все доступные мероприятия");
         }
 

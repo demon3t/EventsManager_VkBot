@@ -60,14 +60,8 @@ namespace vkBot
                         KeyboardConstructor.ButtonLookEvents(e);
                         break;
                     }
-                case "ЗДОРОВА":
-                    {
-                        KeyboardConstructor.HELLOW(e);
-                        break;
-                    }
                 default:
                     {
-                        KeyboardConstructor.CheckEvents(e);
                         break;
                     }
             }
