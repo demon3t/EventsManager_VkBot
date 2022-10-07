@@ -1,119 +1,113 @@
 ﻿using System;
-using VkBotFramework;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Text;
+using VkBotFramework.Models;
 using VkNet.Enums.SafetyEnums;
 using VkNet.Model.Keyboard;
-using VkNet.Model.RequestParams;
-using Microsoft.Data.SqlClient;
-using System.Threading.Tasks;
-using VkBotFramework.Models;
-using System.Threading;
-using System.Collections.Generic;
 
 namespace EventsLogic
 {
-    static public class KeyboardConstructor
+    internal class KeyboardConstructor
     {
-        public static VkBot? vkBot { private get; set; }
-        public static string connectionDbString { private get; set; } = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Nipa\\source\\repos\\vkBot\\EventsLogic\\Database.mdf;Integrated Security=True";
+        static KeyboardButtonColor Primary = KeyboardButtonColor.Primary;
+        static KeyboardButtonColor Positive = KeyboardButtonColor.Positive;
+        static KeyboardButtonColor Negative = KeyboardButtonColor.Negative;
+        static KeyboardButtonColor Default = KeyboardButtonColor.Default;
 
-        private static void SendMessage(MessageReceivedEventArgs e, string message, KeyboardBuilder keyboard)
+        /// <summary>
+        /// Начальная клавиатура
+        /// </summary>
+        /// <returns></returns>
+        internal static KeyboardBuilder KeyboardBegin()
         {
-            if (vkBot == null) return;
-
-            vkBot.Api.Messages.Send(new MessagesSendParams()
-            {
-                Message = message,
-                PeerId = e.Message.PeerId,
-                RandomId = Environment.TickCount,
-                Keyboard = keyboard.Build()
-            });
-        }
-        private static void SendMessage(MessageReceivedEventArgs e, string message)
-        {
-            if (vkBot == null) return;
-
-            vkBot.Api.Messages.Send(new MessagesSendParams()
-            {
-                Message = message,
-                PeerId = e.Message.PeerId,
-                RandomId = Environment.TickCount,
-            });
+            return (KeyboardBuilder)new KeyboardBuilder()
+                 .AddButton("Информация", "", KeyboardButtonColor.Default)
+                 .AddButton("Я всё знаю", "", KeyboardButtonColor.Positive)
+                 .SetOneTime();
         }
 
-        public static void ButtonBegin(MessageReceivedEventArgs e)
-        {
-            if (vkBot == null) return;
 
+        /// <summary>
+        /// Кнопка отвечающая за "Информация"
+        /// </summary>
+        /// <returns></returns>
+        internal static KeyboardBuilder KeyboardInfo()
+        {
+            return (KeyboardBuilder)new KeyboardBuilder()
+                .AddButton("Я всё знаю", "", KeyboardButtonColor.Positive)
+                .SetOneTime();
+        }
+
+        /// <summary>
+        /// Кнопка отвечающая за "Я всё знаю","Назад" и "Обо мне"
+        /// </summary>
+        /// <param name="IsAdmin"> Является ли пользователь аминистраторо? </param>
+        /// <returns></returns>
+        internal static KeyboardBuilder KeyboardKnown(bool IsAdmin)
+        {
             KeyboardBuilder keyboard = (KeyboardBuilder)new KeyboardBuilder()
-                .AddButton("Информация", "", KeyboardButtonColor.Default)
-                .AddButton("Я всё знаю", "", KeyboardButtonColor.Positive).SetOneTime();
+            .AddButton("Посмотреть мероприятия", "", Positive)
+            .AddLine();
 
-            SendMessage(e, "Привет, уже был здесь?", keyboard);
+            if (IsAdmin)
+                keyboard
+                    .AddButton("Создать мероприятие", "", Primary)
+                    .AddLine();
+
+            keyboard
+                .AddButton("Мои мероприятия", "", Primary)
+            .AddButton("Завершённые мероприятия", "", KeyboardButtonColor.Default).SetOneTime()
+            .AddLine()
+            .AddButton("Информация", "", Default)
+            .AddButton("Обо мне", "", Default)
+            .SetOneTime();
+
+            return keyboard;
         }
 
-        public static void ButtonInfo(MessageReceivedEventArgs e)
+        /// <summary>
+        /// Кнопка отвечающая за "Посмотреть мероприятия"
+        /// </summary>
+        /// <param name="actualEvents"> Список актуальных мероприятий </param>
+        /// <returns></returns>
+        internal static KeyboardBuilder KeyboardLookEvent(MessageReceivedEventArgs e)
         {
-            if (vkBot == null) return;
+            KeyboardBuilder keyboard = new KeyboardBuilder();
 
-            KeyboardBuilder keyboard = (KeyboardBuilder)new KeyboardBuilder()
-                .AddButton("Я всё знаю", "", KeyboardButtonColor.Positive).SetOneTime();
+            Event.InterestUsers.Add(e.Message.PeerId.ToString());
 
-            SendMessage(e, $"\tПривет {1}.Данный бот может оповещать и записывать на доступные мероприятия. А так же напоминать о мероприятиях на которые Вы записались.", keyboard);
-        }
-
-        public static void ButtonAboutMe(MessageReceivedEventArgs e)
-        {
-            if (vkBot == null) return;
-
-            KeyboardBuilder keyboard = (KeyboardBuilder)new KeyboardBuilder()
-                .AddButton("Посмотреть мероприятия", "", KeyboardButtonColor.Positive)
-                .AddLine()
-                .AddButton("Мои мероприятия", "", KeyboardButtonColor.Primary)
-                .AddButton("Завершённые мероприятия", "", KeyboardButtonColor.Default).SetOneTime()
-                .AddLine()
-                .AddButton("Информация", "", KeyboardButtonColor.Default)
-                .AddButton("Обо мне", "", KeyboardButtonColor.Default);
-
-            string message = DatabaseLogic.AboutMe(e.Message.PeerId.ToString());
-
-            SendMessage(e, message, keyboard);
-        }
-
-        public static void ButtonKnown(MessageReceivedEventArgs e)
-        {
-            if (vkBot == null) return;
-
-            KeyboardBuilder keyboard = (KeyboardBuilder)new KeyboardBuilder()
-                .AddButton("Посмотреть мероприятия", "", KeyboardButtonColor.Positive)
-                .AddLine()
-                .AddButton("Мои мероприятия", "", KeyboardButtonColor.Primary)
-                .AddButton("Завершённые мероприятия", "", KeyboardButtonColor.Default).SetOneTime()
-                .AddLine()
-                .AddButton("Информация", "", KeyboardButtonColor.Default)
-                .AddButton("Обо мне", "", KeyboardButtonColor.Default);
-
-            SendMessage(e, "Тогда продолжим.\nЧто ты хочешь сделать?", keyboard);
-        }
-
-        public static void ButtonLookEvents(MessageReceivedEventArgs e, List<Event> actualEvents)
-        {
-            if (vkBot == null) return;
-
-            LookEventsButtons(out KeyboardBuilder keyboard, e, actualEvents);
-
-            SendMessage(e, "Вот все доступные мероприятия", keyboard);
-        }
-
-        private static void LookEventsButtons(out KeyboardBuilder keyboard, MessageReceivedEventArgs e, List<Event> actualEvents)
-        {
-            keyboard = (KeyboardBuilder)new KeyboardBuilder();
-
-            foreach (var _event in actualEvents)
+            foreach (var _event in Event.ActualEvents)
             {
                 if (_event.Name == null) continue;
                 keyboard.AddButton(_event.Name.ToString(), "").AddLine();
             }
-            keyboard.AddButton("Назад", "", KeyboardButtonColor.Primary);
+
+            keyboard
+                .AddButton("Назад", "", KeyboardButtonColor.Primary)
+                .SetOneTime();
+            return keyboard;
+        }
+
+        internal static KeyboardBuilder KeyboardEvent(MessageReceivedEventArgs e, Event selectEvent, bool IsAdmin)
+        {
+            KeyboardBuilder keyboard = new KeyboardBuilder();
+
+            if (selectEvent.InvolvedUsers.Contains(e.Message.PeerId.ToString()))
+                keyboard
+                    .AddButton("Я не пойду", "", Negative).AddLine();
+            else
+                if (selectEvent._Count < selectEvent.Count)
+                    keyboard
+                        .AddButton("Я пойду", "", Positive).AddLine();
+
+            if (IsAdmin)
+                keyboard
+                    .AddButton("Редактировать", "", Primary)
+                    .AddButton("Удалить", "", Negative)
+                    .SetOneTime();
+
+            return keyboard;
         }
     }
 }

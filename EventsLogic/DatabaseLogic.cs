@@ -82,7 +82,7 @@ namespace EventsLogic
         /// <param name="adminList"> Роль Admin. </param>
         /// <param name="makeList"> Роль Make. </param>
         /// <param name="markList"> Роль Mark. </param>
-        public static void FillPriority(out List<string> adminList, out List<string> makeList, out List<string> markList)
+        public static void FillPriority(out List<string> adminList, out List<string> markList)
         {
             adminList = new List<string>();
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -100,26 +100,6 @@ namespace EventsLogic
                     {
                         adminList.Add(reader.GetString(i));
                         Console.WriteLine($"Admin add: {reader.GetString(i)}");
-                    }
-                    else break;
-            }
-
-            makeList = new List<string>();
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string sqlExpression = "FindUserMake";
-
-                connection.Open();
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
-
-                command.CommandType = System.Data.CommandType.StoredProcedure;
-                SqlDataReader reader = command.ExecuteReader();
-
-                for (int i = 0; i < int.MaxValue; i++)
-                    if (reader.Read())
-                    {
-                        makeList.Add(reader.GetString(i));
-                        Console.WriteLine($"Make add: {reader.GetString(i)}");
                     }
                     else break;
             }

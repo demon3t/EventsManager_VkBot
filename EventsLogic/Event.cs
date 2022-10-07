@@ -7,12 +7,19 @@ namespace EventsLogic
 {
     public class Event
     {
+        public static List<string> InterestUsers = new List<string>();
+
+        public static List<Event> ActualEvents = new List<Event>();
+
+        public List<string> InvolvedUsers = new List<string>();
+
         #region свойства
         public int Id { get; set; }
         public bool IsActual { get; set; }
         public string? Name { get; set; }
         public string? Place { get; set; }
         public int Count { get; set; }
+        public int _Count { get; set; } = 0;
         public string? Describe { get; set; }
         public DateTime FullDataTime { get { return new DateTime(Date.Year, Date.Month, Date.Day, Time.Hour, Time.Minute, Time.Second); } }
         public DateTime FullRemindDataTime { get { return new DateTime(Date.Year, Date.Month, Date.Day, RemindTime.Hour, RemindTime.Minute, RemindTime.Second); } }
@@ -21,7 +28,6 @@ namespace EventsLogic
         private DateTime RemindTime { get { return Time.AddHours(-1); } }
 
         #endregion
-
 
 
 

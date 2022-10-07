@@ -13,33 +13,55 @@ namespace vkBot
 {
     internal class Program
     {
+        #region локальные переменные
+
+        /// <summary>
+        /// API VKBot
+        /// </summary>
         private static VkBot vkBot = new VkBot(config.Token, config.URL);
+
+        /// <summary>
+        /// Список администраторов
+        /// </summary>
         private static List<string> adminList = new List<string>();
+
+        /// <summary>
+        /// Список администраторов создающих мероприятие
+        /// </summary>
         private static List<string> makeList = new List<string>();
+
+        /// <summary>
+        /// Список помощников
+        /// </summary>
         private static List<string> markList = new List<string>();
-        private static List<Event> actualEvents = new List<Event>();
+
+        #endregion
+
         static void Main(string[] args)
         {
-            KeyboardConstructor.vkBot = vkBot;
+            MessageConstructor.vkBot = vkBot;
             vkBot.OnBotStarted += VkBot_OnBotStarted;
-
 
             vkBot.Start();
         }
 
         private static void VkBot_OnBotStarted(object sender, EventArgs e)
         {
-            Console.WriteLine($"{DateTime.Now}: Bot started");
-            DatabaseLogic.FillPriority(out adminList, out makeList, out markList);
-            DatabaseLogic.FillActualEvents(out actualEvents);
+            Console.WriteLine($"{DateTime.Now}: Bot started");       // оповещение запуска бота
+            DatabaseLogic.FillPriority(out adminList, out markList); // загрузка списка Адмистроторов и Помощников
+            DatabaseLogic.FillActualEvents(out Event.ActualEvents);  // загрузка списка актуальных мероприятий
             vkBot.OnMessageReceived += VkBot_OnMessageReceived;
         }
 
         private static void VkBot_OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            if (!DatabaseLogic.CheckUserToId(e.Message.PeerId.ToString())) RegisterUser(e);
+            bool IsAdmin = adminList.Contains(e.Message.PeerId.ToString());
 
-            if (makeList.Contains(e.Message.PeerId.ToString())) MakeEvent(sender, e);
+            if (!DatabaseLogic.CheckUserToId(e.Message.PeerId.ToString())) RegisterUser(e); // регистрация навого пользователя
+
+            if (makeList.Contains(e.Message.PeerId.ToString())) MakeEvent(sender, e);       // если пользователь создаёт меропряитие
+
+            if (Event.InterestUsers.Contains(e.Message.PeerId.ToString())) SelectEvent(sender, e, IsAdmin);
 
             Console.WriteLine($"{DateTime.Now.ToString().Replace(' ', '/')}  {e.Message.PeerId}:  {e.Message.Text}");
 
@@ -48,28 +70,28 @@ namespace vkBot
                 case "НАЧАТЬ":
                 case "ПРИВЕТ":
                     {
-                        KeyboardConstructor.ButtonBegin(e);
+                        MessageConstructor.ButtonBegin(e);
                         break;
                     }
                 case "ИНФОРМАЦИЯ":
                     {
-                        KeyboardConstructor.ButtonInfo(e);
+                        MessageConstructor.ButtonInfo(e);
                         break;
                     }
                 case "ОБО МНЕ":
                     {
-                        KeyboardConstructor.ButtonAboutMe(e);
+                        MessageConstructor.ButtonAboutMe(e, IsAdmin);
                         break;
                     }
                 case "Я ВСЁ ЗНАЮ":
                 case "НАЗАД":
                     {
-                        KeyboardConstructor.ButtonKnown(e);
+                        MessageConstructor.ButtonKnown(e, IsAdmin);
                         break;
                     }
                 case "ПОСМОТРЕТЬ МЕРОПРИЯТИЯ":
                     {
-                        KeyboardConstructor.ButtonLookEvents(e, actualEvents);
+                        MessageConstructor.ButtonLookEvents(e);
                         break;
                     }
                 default:
@@ -78,6 +100,19 @@ namespace vkBot
                     }
             }
         }
+
+        private static void SelectEvent(object sender, MessageReceivedEventArgs e, bool IsAdmin)
+        {
+            foreach (var _event in Event.ActualEvents)
+            {
+                if (_event.Name == e.Message.Text)
+                {
+                    MessageConstructor.BullonEvent(e, IsAdmin, _event);
+                    return;
+                }
+            }
+        }
+
         private static void MakeEvent(object sender, MessageReceivedEventArgs e)
         {
 
@@ -95,7 +130,7 @@ namespace vkBot
                 vkBot.Api.Messages.GetConversations(param).Profiles[0].FirstName,
                 vkBot.Api.Messages.GetConversations(param).Profiles[0].LastName, false);
 
-            MeInfo.AddNewUser(vkBot,e, vkBot.Api.Messages.GetConversations(param).Profiles[0]);
+            MeInfo.AddNewUser(vkBot, e, vkBot.Api.Messages.GetConversations(param).Profiles[0]);
         }
 
     }
