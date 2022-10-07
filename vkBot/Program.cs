@@ -59,9 +59,23 @@ namespace vkBot
 
             if (!DatabaseLogic.CheckUserToId(e.Message.PeerId.ToString())) RegisterUser(e); // регистрация навого пользователя
 
-            if (makeList.Contains(e.Message.PeerId.ToString())) MakeEvent(sender, e);       // если пользователь создаёт меропряитие
+            if (makeList.Contains(e.Message.PeerId.ToString())) // если пользователь создаёт меропряитие
+            {
+                MakeEvent(sender, e);
+                return;
+            }
 
-            if (Event.InterestUsers.Contains(e.Message.PeerId.ToString())) SelectEvent(sender, e, IsAdmin);
+            if (Event.InterestUsers.Contains(e.Message.PeerId.ToString())) // пользователь выбирает мероприятие
+            {
+                SelectEvent(sender, e, IsAdmin);
+                return;
+            }
+
+            if (Event.ChoiseUsers.Contains(e.Message.PeerId.ToString())) // позьдователь выбирает действие мероприятия
+            {
+                ChoiseEvent(sender, e, IsAdmin);
+                return;
+            }
 
             Console.WriteLine($"{DateTime.Now.ToString().Replace(' ', '/')}  {e.Message.PeerId}:  {e.Message.Text}");
 
@@ -110,6 +124,38 @@ namespace vkBot
                     MessageConstructor.BullonEvent(e, IsAdmin, _event);
                     return;
                 }
+            }
+        }
+
+        private static void ChoiseEvent(object sender, MessageReceivedEventArgs e, bool IsAdmin)
+        {
+            switch (e.Message.Text.ToUpper())
+            {
+                case "Я НЕ ПОЙДУ":
+                    {
+                        
+                        break;
+                    }
+                case "Я ПОЙДУ":
+                    {
+                        MessageConstructor.ButtonGo(e, IsAdmin);
+                        break;
+                    }
+                case "РЕДАКТИРОВАТЬ":
+                    {
+
+                        break;
+                    }
+                case "УДАЛИТЬ":
+                    {
+                        
+                        break;
+                    }
+                default:
+                    {
+                        MessageConstructor.ButtonKnown(e, IsAdmin);
+                        break;
+                    }
             }
         }
 

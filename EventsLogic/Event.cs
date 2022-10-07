@@ -9,7 +9,10 @@ namespace EventsLogic
     {
         public static List<string> InterestUsers = new List<string>();
 
+
         public static List<Event> ActualEvents = new List<Event>();
+
+        public  List<string> ChoiseUsers = new List<string>();
 
         public List<string> InvolvedUsers = new List<string>();
 

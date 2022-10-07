@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using VkBotFramework;
 using VkBotFramework.Models;
+using VkNet.Model;
 using VkNet.Model.Keyboard;
 using VkNet.Model.RequestParams;
 
@@ -77,15 +78,40 @@ namespace EventsLogic
 
         public static void BullonEvent(MessageReceivedEventArgs e, bool IsAdmin, Event selectEvent)
         {
+            Event.InterestUsers.Remove(e.Message.PeerId.ToString());
+            selectEvent.ChoiseUsers.Add(e.Message.PeerId.ToString());
+
             string message =
                  $"{selectEvent.Name}\n" +
                  $"Время: {selectEvent.FullDataTime:f}\n" +
-                 $"{(selectEvent.Place == null? "": $"Место проведения: {selectEvent.Place}\n" )}" +
+                 $"{(selectEvent.Place == null ? "" : $"Место проведения: {selectEvent.Place}\n")}" +
                  $"{(selectEvent.Describe == null ? "" : $"О мероприятии: {selectEvent.Describe}\n")}" +
                  $"Свободных мест: {selectEvent._Count} из {selectEvent.Count}";
 
             SendMessage(e, message, KeyboardConstructor.KeyboardEvent(e, selectEvent, IsAdmin));
 
         }
+
+        #region choise
+
+        public static void ButtonGo(MessageReceivedEventArgs e, bool IsAdmin)
+        {
+            Event @event = new Event();
+
+            foreach (var _event in Event.ActualEvents)
+                foreach (var user in _event.ChoiseUsers)
+                    if (user == e.Message.PeerId.ToString())
+                    {
+                        @event = _event;
+                        @event._Count++;
+                    }
+
+            string message =
+                $"Вы записалисы на мероприятие\n" +
+                $"{@event.Name}";
+
+            SendMessage(e, message, KeyboardConstructor.KeyboardKnown(IsAdmin));
+        }
+        #endregion
     }
 }

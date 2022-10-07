@@ -105,6 +105,7 @@ namespace EventsLogic
                 keyboard
                     .AddButton("Редактировать", "", Primary)
                     .AddButton("Удалить", "", Negative)
+                    .AddButton("Назад", "", Default)
                     .SetOneTime();
 
             return keyboard;
