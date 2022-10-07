@@ -75,7 +75,7 @@ namespace EventsLogic
         {
             KeyboardBuilder keyboard = new KeyboardBuilder();
 
-            Event.InterestUsers.Add(e.Message.PeerId.ToString());
+            Event.AllInterestUsers.Add(e.Message.PeerId.ToString());
 
             foreach (var _event in Event.ActualEvents)
             {

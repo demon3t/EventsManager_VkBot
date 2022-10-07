@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using VkBotFramework;
 using VkBotFramework.Models;
@@ -28,7 +29,7 @@ namespace EventsLogic
 
         public static void ButtonBegin(MessageReceivedEventArgs e)
         {
-            Event.InterestUsers.Remove(e.Message.PeerId.ToString());
+            Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
 
             string message =
                 "Привет, уже был здесь?";
@@ -38,7 +39,7 @@ namespace EventsLogic
 
         public static void ButtonInfo(MessageReceivedEventArgs e)
         {
-            Event.InterestUsers.Remove(e.Message.PeerId.ToString());
+            Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
 
             string message =
                 $"Привет {1}.Данный бот может оповещать и записывать на доступные мероприятия.\n" +
@@ -49,7 +50,7 @@ namespace EventsLogic
 
         public static void ButtonAboutMe(MessageReceivedEventArgs e, bool IsAdmin)
         {
-            Event.InterestUsers.Remove(e.Message.PeerId.ToString());
+            Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
 
             string message =
                 DatabaseLogic.AboutMe(e.Message.PeerId.ToString());
@@ -59,7 +60,7 @@ namespace EventsLogic
 
         public static void ButtonKnown(MessageReceivedEventArgs e, bool IsAdmin)
         {
-            Event.InterestUsers.Remove(e.Message.PeerId.ToString());
+            Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
 
             string message =
                 "Тогда продолжим.\n" +
@@ -78,7 +79,8 @@ namespace EventsLogic
 
         public static void BullonEvent(MessageReceivedEventArgs e, bool IsAdmin, Event selectEvent)
         {
-            Event.InterestUsers.Remove(e.Message.PeerId.ToString());
+            Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
+            Event.AllChoiseUsers.Add(e.Message.PeerId.ToString());
             selectEvent.ChoiseUsers.Add(e.Message.PeerId.ToString());
 
             string message =
@@ -99,16 +101,60 @@ namespace EventsLogic
             Event @event = new Event();
 
             foreach (var _event in Event.ActualEvents)
+            {
                 foreach (var user in _event.ChoiseUsers)
                     if (user == e.Message.PeerId.ToString())
                     {
                         @event = _event;
                         @event._Count++;
+                        @event.InvolvedUsers.Add(user);
+                        Event.AllChoiseUsers.Remove(user);
+                        Event.AllInterestUsers.Remove(user);
+                        break;
                     }
+                if (!string.IsNullOrEmpty(@event.Name)) break;
+            }
 
             string message =
                 $"Вы записалисы на мероприятие\n" +
-                $"{@event.Name}";
+                $"\"{@event.Name}\"";
+
+            SendMessage(e, message, KeyboardConstructor.KeyboardKnown(IsAdmin));
+        }
+
+        public static void ButtonNotGo(MessageReceivedEventArgs e, bool IsAdmin)
+        {
+            Event @event = new Event();
+
+            foreach (var _event in Event.ActualEvents)
+            {
+                foreach (var user in _event.InvolvedUsers)
+                    if (user == e.Message.PeerId.ToString())
+                    {
+                        @event = _event;
+                        @event._Count--;
+                        @event.InvolvedUsers.Remove(user);
+                        Event.AllChoiseUsers.Remove(user);
+                        break;
+                    }
+                if (!string.IsNullOrEmpty(@event.Name)) break;
+            }
+
+
+            string message =
+                $"Вы не пойдёте на мероприятие:\n" +
+                $"\"{@event.Name}\"";
+
+            SendMessage(e, message, KeyboardConstructor.KeyboardKnown(IsAdmin));
+        }
+
+        public static void ButtunExitChoise(MessageReceivedEventArgs e, bool IsAdmin)
+        {
+            Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
+            Event.AllChoiseUsers.Remove(e.Message.PeerId.ToString());
+
+            string message =
+                "Что ты хотите сделать?";
 
             SendMessage(e, message, KeyboardConstructor.KeyboardKnown(IsAdmin));
         }

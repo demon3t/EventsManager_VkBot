@@ -7,10 +7,11 @@ namespace EventsLogic
 {
     public class Event
     {
-        public static List<string> InterestUsers = new List<string>();
-
+        public static List<string> AllInterestUsers = new List<string>();
 
         public static List<Event> ActualEvents = new List<Event>();
+
+        public static List<string> AllChoiseUsers = new List<string>();
 
         public  List<string> ChoiseUsers = new List<string>();
 

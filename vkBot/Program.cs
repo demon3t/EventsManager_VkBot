@@ -57,6 +57,12 @@ namespace vkBot
         {
             bool IsAdmin = adminList.Contains(e.Message.PeerId.ToString());
 
+            if (e.Message.Text == "123")
+            {
+                Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
+                Event.AllChoiseUsers.Remove(e.Message.PeerId.ToString());
+            }
+
             if (!DatabaseLogic.CheckUserToId(e.Message.PeerId.ToString())) RegisterUser(e); // регистрация навого пользователя
 
             if (makeList.Contains(e.Message.PeerId.ToString())) // если пользователь создаёт меропряитие
@@ -65,17 +71,18 @@ namespace vkBot
                 return;
             }
 
-            if (Event.InterestUsers.Contains(e.Message.PeerId.ToString())) // пользователь выбирает мероприятие
+            if (Event.AllChoiseUsers.Contains(e.Message.PeerId.ToString())) // позьдователь выбирает действие мероприятия
+            {
+                ChoiseEvent(sender, e, IsAdmin);
+                return;
+            }
+
+            if (Event.AllInterestUsers.Contains(e.Message.PeerId.ToString())) // пользователь выбирает мероприятие
             {
                 SelectEvent(sender, e, IsAdmin);
                 return;
             }
 
-            if (Event.ChoiseUsers.Contains(e.Message.PeerId.ToString())) // позьдователь выбирает действие мероприятия
-            {
-                ChoiseEvent(sender, e, IsAdmin);
-                return;
-            }
 
             Console.WriteLine($"{DateTime.Now.ToString().Replace(' ', '/')}  {e.Message.PeerId}:  {e.Message.Text}");
 
@@ -125,6 +132,7 @@ namespace vkBot
                     return;
                 }
             }
+
         }
 
         private static void ChoiseEvent(object sender, MessageReceivedEventArgs e, bool IsAdmin)
@@ -133,7 +141,7 @@ namespace vkBot
             {
                 case "Я НЕ ПОЙДУ":
                     {
-                        
+                        MessageConstructor.ButtonNotGo(e, IsAdmin);
                         break;
                     }
                 case "Я ПОЙДУ":
@@ -143,17 +151,17 @@ namespace vkBot
                     }
                 case "РЕДАКТИРОВАТЬ":
                     {
-
+                        MessageConstructor.ButtunExitChoise(e, IsAdmin);
                         break;
                     }
                 case "УДАЛИТЬ":
                     {
-                        
+                        MessageConstructor.ButtunExitChoise(e, IsAdmin);
                         break;
                     }
                 default:
                     {
-                        MessageConstructor.ButtonKnown(e, IsAdmin);
+                        MessageConstructor.ButtunExitChoise(e, IsAdmin);
                         break;
                     }
             }
