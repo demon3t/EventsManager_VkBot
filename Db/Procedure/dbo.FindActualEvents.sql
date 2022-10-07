@@ -1,0 +1,6 @@
+﻿CREATE PROCEDURE [FindActualEvents]
+AS
+BEGIN
+	SELECT * FROM Events
+	WHERE Actual = 1
+END

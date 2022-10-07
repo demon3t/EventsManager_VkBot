@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.Linq;
+using VkNet.Model;
 
 namespace EventsLogic
 {
@@ -144,6 +145,40 @@ namespace EventsLogic
             }
         }
 
+        public static void FillActualEvents(out List<Event> actualEvents)
+        {
+            actualEvents = new List<Event>();
+            string sqlExpression = "FindActualEvents";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                for (int i = 0; i < int.MaxValue; i++)
+                    if (reader.Read())
+                    {
+                        actualEvents.Add(new Event()
+                        {
+                            Id = (int)reader["Id"],
+                            IsActual = (bool)reader["Actual"],
+                            Name = (string)reader["Name"],
+                            Place = (string)reader["Place"],
+                            Count = (int)reader["Count"],
+                            Describe = (string)reader["Describe"],
+                            Date = (DateTime)reader["Date"],
+                            Time = (DateTime)reader["Time"],
+                        });
+                        Console.WriteLine($"Событие \"{actualEvents.Last().Name}\" добавлено");
+                    }
+                    else break;
+            }
+        }
+
         public static string AboutMe(string id)
         {
             User user = GetUsersByProcedure("UserInfo", id, "@Id").First();
@@ -185,6 +220,7 @@ namespace EventsLogic
                             IsMake = (bool)reader["Make"],
                             IsMark = (bool)reader["Mark"]
                         });
+                        Console.WriteLine($"Пользователь {users.Last().SurName} {users.Last().Name} найден");
                     }
                     else break;
             }

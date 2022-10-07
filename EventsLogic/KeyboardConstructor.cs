@@ -7,6 +7,7 @@ using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 using VkBotFramework.Models;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace EventsLogic
 {
@@ -94,26 +95,25 @@ namespace EventsLogic
             SendMessage(e, "Тогда продолжим.\nЧто ты хочешь сделать?", keyboard);
         }
 
-        public static void ButtonLookEvents(MessageReceivedEventArgs e)
+        public static void ButtonLookEvents(MessageReceivedEventArgs e, List<Event> actualEvents)
         {
             if (vkBot == null) return;
 
-            LookEventsButtons(out KeyboardBuilder keyboard, e);
+            LookEventsButtons(out KeyboardBuilder keyboard, e, actualEvents);
 
-            SendMessage(e, "Вот все доступные мероприятия");
+            SendMessage(e, "Вот все доступные мероприятия", keyboard);
         }
 
-        private static void LookEventsButtons(out KeyboardBuilder keyboard, MessageReceivedEventArgs e)
+        private static void LookEventsButtons(out KeyboardBuilder keyboard, MessageReceivedEventArgs e, List<Event> actualEvents)
         {
-            keyboard = (KeyboardBuilder)new KeyboardBuilder().AddButton("Я всё знаю","",KeyboardButtonColor.Primary);
+            keyboard = (KeyboardBuilder)new KeyboardBuilder();
 
-            using (SqlConnection connection = new SqlConnection(connectionDbString))
+            foreach (var _event in actualEvents)
             {
-                connection.Open();
-                SendMessage(e, $"Строка подключения: {connection.ConnectionString}\nБаза данных: {connection.Database}\nСервер: {connection.DataSource}\nСостояние: {connection.State}");
-                Console.WriteLine($"Строка подключения: {connection.ConnectionString}\nБаза данных: {connection.Database}\nСервер: {connection.DataSource}\nСостояние: {connection.State}");
+                if (_event.Name == null) continue;
+                keyboard.AddButton(_event.Name.ToString(), "").AddLine();
             }
-            Console.WriteLine("Подключение закрыто");
+            keyboard.AddButton("Назад", "", KeyboardButtonColor.Primary);
         }
     }
 }
