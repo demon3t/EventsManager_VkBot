@@ -4,14 +4,13 @@ using System.Text;
 
 namespace EventsLogic
 {
-    internal class User
+    public class Person
     {
-        public string? Id { get; set; }
+        public string Id { get; set; } = string.Empty;
         public string? SurName { get; set; }
         public string? Name { get; set; }
         public bool IsAdmin { get; set; }
-        public bool IsMake { get; set; }
-        public int MakeState { get; set; }
-        public bool IsMark { get; set; }
+        public int Major { get; set; }
+        public int Minor { get; set; }
     }
 }

@@ -1,0 +1,7 @@
+﻿CREATE PROCEDURE [UserFindById]
+@Id NVARCHAR (20)
+AS
+BEGIN
+	SELECT * FROM Users
+	WHERE Id = @Id
+END

@@ -1,0 +1,7 @@
+﻿CREATE PROCEDURE [UserFindByName]
+@Name NVARCHAR(20)
+AS
+BEGIN
+	SELECT * FROM Users
+	WHERE Name =@Name
+END

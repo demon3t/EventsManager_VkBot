@@ -27,6 +27,20 @@ namespace EventsLogic
             });
         }
 
+        #region FirstOccurrence
+
+        public static void FirstOccurrence(Person person, MessageReceivedEventArgs e)
+        {
+            string message =
+                $"Привет {person.Name}.Данный бот может оповещать и записывать на доступные мероприятия.\n" +
+                $"А так же напоминать о мероприятиях на которые Вы записались.";
+
+            SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
+        }
+
+        #endregion
+
+
         public static void ButtonBegin(MessageReceivedEventArgs e)
         {
             Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
@@ -53,9 +67,9 @@ namespace EventsLogic
             Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
 
             string message =
-                DatabaseLogic.AboutMe(e.Message.PeerId.ToString());
+                DatebaseLogic.AboutMe(e.Message.PeerId.ToString());
 
-            SendMessage(e, message, KeyboardConstructor.KeyboardKnown(IsAdmin));
+            SendMessage(e, message, KeyboardConstructor.MainMenu(IsAdmin));
         }
 
         public static void ButtonKnown(MessageReceivedEventArgs e, bool IsAdmin)
@@ -66,7 +80,7 @@ namespace EventsLogic
                 "Тогда продолжим.\n" +
                 "Что ты хочешь сделать?";
 
-            SendMessage(e, message, KeyboardConstructor.KeyboardKnown(IsAdmin));
+            SendMessage(e, message, KeyboardConstructor.MainMenu(IsAdmin));
         }
 
         public static void ButtonLookEvents(MessageReceivedEventArgs e)
@@ -119,7 +133,7 @@ namespace EventsLogic
                 $"Вы записалисы на мероприятие\n" +
                 $"\"{@event.Name}\"";
 
-            SendMessage(e, message, KeyboardConstructor.KeyboardKnown(IsAdmin));
+            SendMessage(e, message, KeyboardConstructor.MainMenu(IsAdmin));
         }
 
         public static void ButtonNotGo(MessageReceivedEventArgs e, bool IsAdmin)
@@ -145,7 +159,7 @@ namespace EventsLogic
                 $"Вы не пойдёте на мероприятие:\n" +
                 $"\"{@event.Name}\"";
 
-            SendMessage(e, message, KeyboardConstructor.KeyboardKnown(IsAdmin));
+            SendMessage(e, message, KeyboardConstructor.MainMenu(IsAdmin));
         }
 
         public static void ButtunExitChoise(MessageReceivedEventArgs e, bool IsAdmin)
@@ -156,7 +170,7 @@ namespace EventsLogic
             string message =
                 "Что ты хотите сделать?";
 
-            SendMessage(e, message, KeyboardConstructor.KeyboardKnown(IsAdmin));
+            SendMessage(e, message, KeyboardConstructor.MainMenu(IsAdmin));
         }
         #endregion
     }

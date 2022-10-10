@@ -1,11 +1,10 @@
-﻿CREATE PROCEDURE [InsertUser]
+﻿CREATE PROCEDURE [UserAdd]
     @Id NVARCHAR(20),
     @Name NVARCHAR(20),
     @Surname NVARCHAR(20),
     @Admin BIT,
-    @Make BIT,
-	@MakeState FLOAT,
-    @Mark BIT
+	@Major INT,
+	@Minor INT
  
 AS
     INSERT INTO [Users]
@@ -14,9 +13,8 @@ AS
     Name,
     Surname,
     Admin,
-    Make,
-	MakeState,
-    Mark
+	Major,
+	Minor
     )
  
     VALUES
@@ -25,8 +23,8 @@ AS
     @Name,
     @Surname,
     @Admin,
-    @Make,
-	@MakeState,
-    @Mark
+	@Major,
+	@Minor
+ 
     )
 SELECT SCOPE_IDENTITY()

@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vkBot", "vkBot\vkBot.csproj", "{C57D46B6-05EE-4F02-8116-43D35D7122CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "vkBot", "vkBot\vkBot.csproj", "{C57D46B6-05EE-4F02-8116-43D35D7122CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventsLogic", "EventsLogic\EventsLogic.csproj", "{D20007D4-7848-4EA5-90D6-76EB2F9F7D30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventsLogic", "EventsLogic\EventsLogic.csproj", "{D20007D4-7848-4EA5-90D6-76EB2F9F7D30}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging", "Logging\Logging.csproj", "{22327DCA-29D2-44C0-A887-F784DE4B0D69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D20007D4-7848-4EA5-90D6-76EB2F9F7D30}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D20007D4-7848-4EA5-90D6-76EB2F9F7D30}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D20007D4-7848-4EA5-90D6-76EB2F9F7D30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22327DCA-29D2-44C0-A887-F784DE4B0D69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22327DCA-29D2-44C0-A887-F784DE4B0D69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22327DCA-29D2-44C0-A887-F784DE4B0D69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22327DCA-29D2-44C0-A887-F784DE4B0D69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

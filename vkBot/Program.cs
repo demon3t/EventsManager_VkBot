@@ -1,7 +1,9 @@
 ﻿using EventsLogic;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Threading;
 using VkBotFramework;
 using VkBotFramework.Models;
 using VkNet.Enums.Filters;
@@ -13,6 +15,8 @@ namespace vkBot
 {
     internal class Program
     {
+        
+
         #region локальные переменные
 
         /// <summary>
@@ -24,16 +28,6 @@ namespace vkBot
         /// Список администраторов
         /// </summary>
         private static List<string> adminList = new List<string>();
-
-        /// <summary>
-        /// Список администраторов создающих мероприятие
-        /// </summary>
-        private static List<string> makeList = new List<string>();
-
-        /// <summary>
-        /// Список помощников
-        /// </summary>
-        private static List<string> markList = new List<string>();
 
         #endregion
 
@@ -48,78 +42,75 @@ namespace vkBot
         private static void VkBot_OnBotStarted(object sender, EventArgs e)
         {
             Console.WriteLine($"{DateTime.Now}: Bot started");       // оповещение запуска бота
-            DatabaseLogic.FillPriority(out adminList, out markList); // загрузка списка Адмистроторов и Помощников
-            DatabaseLogic.FillActualEvents(out Event.ActualEvents);  // загрузка списка актуальных мероприятий
+
+            adminList = DatebaseLogic.FillAdminList();                // загрузка списка Адмистроторов и Помощников
+            DatebaseLogic.FillActualEvents(out Event.ActualEvents);  // загрузка списка актуальных мероприятий
+
             vkBot.OnMessageReceived += VkBot_OnMessageReceived;
         }
 
         private static void VkBot_OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            bool IsAdmin = adminList.Contains(e.Message.PeerId.ToString());
+            if (DatebaseLogic.CheckUserToId(e.Message.PeerId.ToString())) RegisterUser(e); // регистрация навого пользователя
 
-            if (e.Message.Text == "123")
+            var person = DatebaseLogic.FindUsers(UserFindBy.Id, e.Message.PeerId).First();
+
+            Console.WriteLine($"{DateTime.Now.ToString().Replace(' ', '/')}  {person.SurName} {person.Name} {person.Id} : {e.Message.Text}");
+
+            switch (person.Major)
             {
-                Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
-                Event.AllChoiseUsers.Remove(e.Message.PeerId.ToString());
+                case 0:
+                    StatusLogic.FirstOccurrence(person,e);
+                    break;
+                case 1:
+                    StatusLogic.FirstOccurrence(person, e);
+                    break;
+                case 2:
+                    StatusLogic.FirstOccurrence(person, e);
+                    break;
+                case 3:
+                    StatusLogic.FirstOccurrence(person, e);
+                    break;
+                case 4:
+                    StatusLogic.FirstOccurrence(person, e);
+                    break;
             }
-
-            if (!DatabaseLogic.CheckUserToId(e.Message.PeerId.ToString())) RegisterUser(e); // регистрация навого пользователя
-
-            if (makeList.Contains(e.Message.PeerId.ToString())) // если пользователь создаёт меропряитие
-            {
-                MakeEvent(sender, e);
-                return;
-            }
-
-            if (Event.AllChoiseUsers.Contains(e.Message.PeerId.ToString())) // позьдователь выбирает действие мероприятия
-            {
-                ChoiseEvent(sender, e, IsAdmin);
-                return;
-            }
-
-            if (Event.AllInterestUsers.Contains(e.Message.PeerId.ToString())) // пользователь выбирает мероприятие
-            {
-                SelectEvent(sender, e, IsAdmin);
-                return;
-            }
-
-
-            Console.WriteLine($"{DateTime.Now.ToString().Replace(' ', '/')}  {e.Message.PeerId}:  {e.Message.Text}");
-
-            switch (e.Message.Text.ToUpper())
-            {
-                case "НАЧАТЬ":
-                case "ПРИВЕТ":
-                    {
-                        MessageConstructor.ButtonBegin(e);
-                        break;
-                    }
-                case "ИНФОРМАЦИЯ":
-                    {
-                        MessageConstructor.ButtonInfo(e);
-                        break;
-                    }
-                case "ОБО МНЕ":
-                    {
-                        MessageConstructor.ButtonAboutMe(e, IsAdmin);
-                        break;
-                    }
-                case "Я ВСЁ ЗНАЮ":
-                case "НАЗАД":
-                    {
-                        MessageConstructor.ButtonKnown(e, IsAdmin);
-                        break;
-                    }
-                case "ПОСМОТРЕТЬ МЕРОПРИЯТИЯ":
-                    {
-                        MessageConstructor.ButtonLookEvents(e);
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
-            }
+            
+            
+            //switch (e.Message.Text.ToUpper())
+            //{
+            //    case "НАЧАТЬ":
+            //    case "ПРИВЕТ":
+            //        {
+            //            MessageConstructor.ButtonBegin(e);
+            //            break;
+            //        }
+            //    case "ИНФОРМАЦИЯ":
+            //        {
+            //            MessageConstructor.ButtonInfo(e);
+            //            break;
+            //        }
+            //    case "ОБО МНЕ":
+            //        {
+            //            MessageConstructor.ButtonAboutMe(e, person.IsAdmin);
+            //            break;
+            //        }
+            //    case "Я ВСЁ ЗНАЮ":
+            //    case "НАЗАД":
+            //        {
+            //            MessageConstructor.ButtonKnown(e, person.IsAdmin);
+            //            break;
+            //        }
+            //    case "ПОСМОТРЕТЬ МЕРОПРИЯТИЯ":
+            //        {
+            //            MessageConstructor.ButtonLookEvents(e);
+            //            break;
+            //        }
+            //    default:
+            //        {
+            //            break;
+            //        }
+            //}
         }
 
         private static void SelectEvent(object sender, MessageReceivedEventArgs e, bool IsAdmin)
@@ -180,11 +171,9 @@ namespace vkBot
                 GroupId = (ulong?)e.Message.PeerId,
                 Extended = true,
             };
-            DatabaseLogic.AddUser(e.Message.PeerId.ToString(),
+            DatebaseLogic.AddUser(e.Message.PeerId.ToString(),
                 vkBot.Api.Messages.GetConversations(param).Profiles[0].FirstName,
                 vkBot.Api.Messages.GetConversations(param).Profiles[0].LastName, false);
-
-            MeInfo.AddNewUser(vkBot, e, vkBot.Api.Messages.GetConversations(param).Profiles[0]);
         }
 
     }

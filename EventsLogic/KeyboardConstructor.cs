@@ -15,36 +15,7 @@ namespace EventsLogic
         static KeyboardButtonColor Negative = KeyboardButtonColor.Negative;
         static KeyboardButtonColor Default = KeyboardButtonColor.Default;
 
-        /// <summary>
-        /// Начальная клавиатура
-        /// </summary>
-        /// <returns></returns>
-        internal static KeyboardBuilder KeyboardBegin()
-        {
-            return (KeyboardBuilder)new KeyboardBuilder()
-                 .AddButton("Информация", "", KeyboardButtonColor.Default)
-                 .AddButton("Я всё знаю", "", KeyboardButtonColor.Positive)
-                 .SetOneTime();
-        }
-
-
-        /// <summary>
-        /// Кнопка отвечающая за "Информация"
-        /// </summary>
-        /// <returns></returns>
-        internal static KeyboardBuilder KeyboardInfo()
-        {
-            return (KeyboardBuilder)new KeyboardBuilder()
-                .AddButton("Я всё знаю", "", KeyboardButtonColor.Positive)
-                .SetOneTime();
-        }
-
-        /// <summary>
-        /// Кнопка отвечающая за "Я всё знаю","Назад" и "Обо мне"
-        /// </summary>
-        /// <param name="IsAdmin"> Является ли пользователь аминистраторо? </param>
-        /// <returns></returns>
-        internal static KeyboardBuilder KeyboardKnown(bool IsAdmin)
+        internal static KeyboardBuilder MainMenu(bool IsAdmin)
         {
             KeyboardBuilder keyboard = (KeyboardBuilder)new KeyboardBuilder()
             .AddButton("Посмотреть мероприятия", "", Positive)
@@ -66,11 +37,25 @@ namespace EventsLogic
             return keyboard;
         }
 
-        /// <summary>
-        /// Кнопка отвечающая за "Посмотреть мероприятия"
-        /// </summary>
-        /// <param name="actualEvents"> Список актуальных мероприятий </param>
-        /// <returns></returns>
+
+        internal static KeyboardBuilder KeyboardBegin()
+        {
+            return (KeyboardBuilder)new KeyboardBuilder()
+                 .AddButton("Информация", "", KeyboardButtonColor.Default)
+                 .AddButton("Я всё знаю", "", KeyboardButtonColor.Positive)
+                 .SetOneTime();
+        }
+        
+
+        internal static KeyboardBuilder KeyboardInfo()
+        {
+            return (KeyboardBuilder)new KeyboardBuilder()
+                .AddButton("Я всё знаю", "", KeyboardButtonColor.Positive)
+                .SetOneTime();
+        }
+
+
+
         internal static KeyboardBuilder KeyboardLookEvent(MessageReceivedEventArgs e)
         {
             KeyboardBuilder keyboard = new KeyboardBuilder();
@@ -88,6 +73,8 @@ namespace EventsLogic
                 .SetOneTime();
             return keyboard;
         }
+
+
 
         internal static KeyboardBuilder KeyboardEvent(MessageReceivedEventArgs e, Event selectEvent, bool IsAdmin)
         {

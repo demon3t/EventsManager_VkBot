@@ -1,6 +1,0 @@
-﻿CREATE PROCEDURE [FindUserMake]
-AS
-BEGIN
-	SELECT Id FROM Users
-	WHERE Make = 1
-END

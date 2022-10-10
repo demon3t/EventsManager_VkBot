@@ -5,8 +5,8 @@
     [Place]    NVARCHAR (50)  NULL,
     [Count]    INT            NOT NULL,
     [Describe] NVARCHAR (MAX) NULL,
-    [Date]     DATETIME       NULL,
-    [Time]     DATETIME       NULL,
+    [Date]     DATETIME       NOT NULL,
+    [Time]     DATETIME       NOT NULL,
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

@@ -1,6 +1,0 @@
-﻿CREATE PROCEDURE [FindUserMark]
-AS
-BEGIN
-	SELECT Id FROM Users
-	WHERE Mark = 1
-END
