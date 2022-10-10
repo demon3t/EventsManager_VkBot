@@ -40,138 +40,62 @@ namespace EventsLogic
 
         #endregion
 
+        #region MainMenu
 
-        public static void ButtonBegin(MessageReceivedEventArgs e)
+        public static void AboutMe(Person person, MessageReceivedEventArgs e)
         {
-            Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
-
-            string message =
-                "Привет, уже был здесь?";
-
-            SendMessage(e, message, KeyboardConstructor.KeyboardBegin());
-        }
-
-        public static void ButtonInfo(MessageReceivedEventArgs e)
-        {
-            Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
-
-            string message =
-                $"Привет {1}.Данный бот может оповещать и записывать на доступные мероприятия.\n" +
-                $"А так же напоминать о мероприятиях на которые Вы записались.";
-
-            SendMessage(e, message, KeyboardConstructor.KeyboardInfo());
-        }
-
-        public static void ButtonAboutMe(MessageReceivedEventArgs e, bool IsAdmin)
-        {
-            Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
-
             string message =
                 DatebaseLogic.AboutMe(e.Message.PeerId.ToString());
 
-            SendMessage(e, message, KeyboardConstructor.MainMenu(IsAdmin));
+            SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
         }
 
-        public static void ButtonKnown(MessageReceivedEventArgs e, bool IsAdmin)
-        {
-            Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
-
-            string message =
-                "Тогда продолжим.\n" +
-                "Что ты хочешь сделать?";
-
-            SendMessage(e, message, KeyboardConstructor.MainMenu(IsAdmin));
-        }
-
-        public static void ButtonLookEvents(MessageReceivedEventArgs e)
+        public static void WatchEvents(Person person, MessageReceivedEventArgs e)
         {
             string message =
                 "Все активные мероприятия";
 
-            SendMessage(e, message, KeyboardConstructor.KeyboardLookEvent(e));
+            SendMessage(e, message, KeyboardConstructor.WatchEvents(e));
         }
 
-        public static void BullonEvent(MessageReceivedEventArgs e, bool IsAdmin, Event selectEvent)
+        public static void MyEvents(Person person, MessageReceivedEventArgs e)
         {
-            Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
-            Event.AllChoiseUsers.Add(e.Message.PeerId.ToString());
-            selectEvent.ChoiseUsers.Add(e.Message.PeerId.ToString());
-
             string message =
-                 $"{selectEvent.Name}\n" +
-                 $"Время: {selectEvent.FullDataTime:f}\n" +
-                 $"{(selectEvent.Place == null ? "" : $"Место проведения: {selectEvent.Place}\n")}" +
-                 $"{(selectEvent.Describe == null ? "" : $"О мероприятии: {selectEvent.Describe}\n")}" +
-                 $"Свободных мест: {selectEvent._Count} из {selectEvent.Count}";
+                "Ваши мероприятия";
 
-            SendMessage(e, message, KeyboardConstructor.KeyboardEvent(e, selectEvent, IsAdmin));
-
+            SendMessage(e, message, KeyboardConstructor.MyEvents(e));
         }
 
-        #region choise
-
-        public static void ButtonGo(MessageReceivedEventArgs e, bool IsAdmin)
+        public static void CreateEvents(Person person, MessageReceivedEventArgs e)
         {
-            Event @event = new Event();
-
-            foreach (var _event in Event.ActualEvents)
-            {
-                foreach (var user in _event.ChoiseUsers)
-                    if (user == e.Message.PeerId.ToString())
-                    {
-                        @event = _event;
-                        @event._Count++;
-                        @event.InvolvedUsers.Add(user);
-                        Event.AllChoiseUsers.Remove(user);
-                        Event.AllInterestUsers.Remove(user);
-                        break;
-                    }
-                if (!string.IsNullOrEmpty(@event.Name)) break;
-            }
-
             string message =
-                $"Вы записалисы на мероприятие\n" +
-                $"\"{@event.Name}\"";
+                "Необходимо заполнить всю обязательную информация (кнопки красного цвета).";
 
-            SendMessage(e, message, KeyboardConstructor.MainMenu(IsAdmin));
+            SendMessage(e, message, KeyboardConstructor.CreateEvents(e));
         }
 
-        public static void ButtonNotGo(MessageReceivedEventArgs e, bool IsAdmin)
+        public static void CompletEvents(Person person, MessageReceivedEventArgs e)
         {
-            Event @event = new Event();
-
-            foreach (var _event in Event.ActualEvents)
-            {
-                foreach (var user in _event.InvolvedUsers)
-                    if (user == e.Message.PeerId.ToString())
-                    {
-                        @event = _event;
-                        @event._Count--;
-                        @event.InvolvedUsers.Remove(user);
-                        Event.AllChoiseUsers.Remove(user);
-                        break;
-                    }
-                if (!string.IsNullOrEmpty(@event.Name)) break;
-            }
-
-
             string message =
-                $"Вы не пойдёте на мероприятие:\n" +
-                $"\"{@event.Name}\"";
+                "Необходимо заполнить всю обязательную информация (кнопки красного цвета).";
 
-            SendMessage(e, message, KeyboardConstructor.MainMenu(IsAdmin));
+            SendMessage(e, message, KeyboardConstructor.CompletEvents(e));
         }
 
-        public static void ButtunExitChoise(MessageReceivedEventArgs e, bool IsAdmin)
-        {
-            Event.AllInterestUsers.Remove(e.Message.PeerId.ToString());
-            Event.AllChoiseUsers.Remove(e.Message.PeerId.ToString());
 
-            string message =
-                "Что ты хотите сделать?";
-
-            SendMessage(e, message, KeyboardConstructor.MainMenu(IsAdmin));
-        }
         #endregion
+
+        #region WatchingEvents
+
+        public static void WatchEvents_Back(Person person, MessageReceivedEventArgs e)
+        {
+            string message = "Возвращаю на главное меню";
+
+            SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
+        }
+
+        #endregion
+
     }
 }
+

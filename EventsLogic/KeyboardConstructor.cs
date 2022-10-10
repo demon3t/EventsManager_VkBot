@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-using VkBotFramework.Models;
+﻿using VkBotFramework.Models;
 using VkNet.Enums.SafetyEnums;
 using VkNet.Model.Keyboard;
 
@@ -15,6 +11,8 @@ namespace EventsLogic
         static KeyboardButtonColor Negative = KeyboardButtonColor.Negative;
         static KeyboardButtonColor Default = KeyboardButtonColor.Default;
 
+
+        #region MainMenu
         internal static KeyboardBuilder MainMenu(bool IsAdmin)
         {
             KeyboardBuilder keyboard = (KeyboardBuilder)new KeyboardBuilder()
@@ -31,42 +29,29 @@ namespace EventsLogic
             .AddButton("Завершённые мероприятия", "", KeyboardButtonColor.Default).SetOneTime()
             .AddLine()
             .AddButton("Информация", "", Default)
-            .AddButton("Обо мне", "", Default)
-            .SetOneTime();
+            .AddButton("Обо мне", "", Default);
 
             return keyboard;
         }
 
-
-        internal static KeyboardBuilder KeyboardBegin()
-        {
-            return (KeyboardBuilder)new KeyboardBuilder()
-                 .AddButton("Информация", "", KeyboardButtonColor.Default)
-                 .AddButton("Я всё знаю", "", KeyboardButtonColor.Positive)
-                 .SetOneTime();
-        }
-        
-
-        internal static KeyboardBuilder KeyboardInfo()
-        {
-            return (KeyboardBuilder)new KeyboardBuilder()
-                .AddButton("Я всё знаю", "", KeyboardButtonColor.Positive)
-                .SetOneTime();
-        }
-
-
-
-        internal static KeyboardBuilder KeyboardLookEvent(MessageReceivedEventArgs e)
+        internal static KeyboardBuilder WatchEvents(MessageReceivedEventArgs e)
         {
             KeyboardBuilder keyboard = new KeyboardBuilder();
 
-            Event.AllInterestUsers.Add(e.Message.PeerId.ToString());
-
-            foreach (var _event in Event.ActualEvents)
+            foreach (var _event in actualEveints)
             {
                 if (_event.Name == null) continue;
                 keyboard.AddButton(_event.Name.ToString(), "").AddLine();
             }
+
+            keyboard
+                .AddButton("Назад", "", KeyboardButtonColor.Primary);
+            return keyboard;
+        }
+
+        internal static KeyboardBuilder MyEvents(MessageReceivedEventArgs e)
+        {
+            KeyboardBuilder keyboard = new KeyboardBuilder();
 
             keyboard
                 .AddButton("Назад", "", KeyboardButtonColor.Primary)
@@ -74,28 +59,37 @@ namespace EventsLogic
             return keyboard;
         }
 
-
-
-        internal static KeyboardBuilder KeyboardEvent(MessageReceivedEventArgs e, Event selectEvent, bool IsAdmin)
+        internal static KeyboardBuilder CreateEvents(MessageReceivedEventArgs e)
         {
             KeyboardBuilder keyboard = new KeyboardBuilder();
 
-            if (selectEvent.InvolvedUsers.Contains(e.Message.PeerId.ToString()))
-                keyboard
-                    .AddButton("Я не пойду", "", Negative).AddLine();
-            else
-                if (selectEvent._Count < selectEvent.Count)
-                    keyboard
-                        .AddButton("Я пойду", "", Positive).AddLine();
-
-            if (IsAdmin)
-                keyboard
-                    .AddButton("Редактировать", "", Primary)
-                    .AddButton("Удалить", "", Negative)
-                    .AddButton("Назад", "", Default)
-                    .SetOneTime();
-
+            keyboard
+                .AddButton("Название", "", Negative).AddLine()
+                .AddButton("Опивание", "", Negative).AddLine()
+                .AddButton("Дата", "", Negative).AddLine()
+                .AddButton("Время", "", Negative).AddLine()
+                .AddButton("Число волонтёров", "", Negative).AddLine()
+                .AddButton("Место", "", Default).AddLine()
+                .AddButton("Назад", "", Default);
             return keyboard;
         }
+
+        internal static KeyboardBuilder CompletEvents(MessageReceivedEventArgs e)
+        {
+            KeyboardBuilder keyboard = new KeyboardBuilder();
+
+            keyboard
+                .AddButton("Назад", "", Default)
+                .SetOneTime();
+            return keyboard;
+        }
+
+        #endregion
+
+        #region WatchingEvents
+
+        #endregion
+
+
     }
 }

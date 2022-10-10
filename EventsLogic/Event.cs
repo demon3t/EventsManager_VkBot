@@ -7,23 +7,18 @@ namespace EventsLogic
 {
     public class Event
     {
-        public static List<string> AllInterestUsers = new List<string>();
-
         public static List<Event> ActualEvents = new List<Event>();
 
-        public static List<string> AllChoiseUsers = new List<string>();
-
-        public  List<string> ChoiseUsers = new List<string>();
-
-        public List<string> InvolvedUsers = new List<string>();
-
         #region свойства
-        public int Id { get; set; }
-        public bool IsActual { get; set; }
+
+        public bool IsCreated { get; set; } = true;
+
+        public int? Id { get; set; }
+        public bool? IsActual { get; set; }
         public string? Name { get; set; }
         public string? Place { get; set; }
-        public int Count { get; set; }
-        public int _Count { get; set; } = 0;
+        public int? Seats { get; set; }
+        public int? _Seats { get; set; }
         public string? Describe { get; set; }
         public DateTime FullDataTime { get { return new DateTime(Date.Year, Date.Month, Date.Day, Time.Hour, Time.Minute, Time.Second); } }
         public DateTime FullRemindDataTime { get { return new DateTime(Date.Year, Date.Month, Date.Day, RemindTime.Hour, RemindTime.Minute, RemindTime.Second); } }
@@ -33,30 +28,21 @@ namespace EventsLogic
 
         #endregion
 
-
-
-        public event EventHandler<RemindEventArgs>? Remind;
-        protected virtual void OnRemind(RemindEventArgs e)
+        public static bool operator ==(Event a, Event b)
         {
-            Volatile.Read(ref Remind)?.Invoke(this, e);
+            return a.Id == b.Id;
         }
-    }
-
-    public class RemindEventArgs : EventArgs
-    {
-        private readonly Event _event;
-
-        public RemindEventArgs(Event _event)
+        public static bool operator !=(Event a, Event b)
         {
-            this._event = _event;
+            return a.Id != b.Id;
         }
-        public int Id { get { return _event.Id; } }
-        public bool IsActual { get { return _event.IsActual; } }
-        public string? Name { get { return _event.Name; } }
-        public string? Place { get { return _event.Place; } }
-        public int Count { get { return _event.Count; } }
-        public string? Describe { get { return _event.Describe; } }
-        public DateTime Date { get { return _event.Date; } }
-        public DateTime Time { get { return _event.Time; } }
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

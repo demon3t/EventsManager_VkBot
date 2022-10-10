@@ -21,8 +21,7 @@ namespace EventsLogic
         Id,
         Name,
         Actual,
-        Date,
-        Seats
+        Date
     }
 
 
@@ -31,7 +30,6 @@ namespace EventsLogic
         private static readonly string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Nipa\\source\\repos\\vkBot\\EventsLogic\\Database.mdf;Integrated Security = True";
 
         #region Работа с базой данных пользователей
-
 
         /// <summary>
         /// Добавляет пользователя в базу данных.
@@ -77,18 +75,12 @@ namespace EventsLogic
                 {
                     CommandType = System.Data.CommandType.StoredProcedure
                 };
-
-                ParameterRegistrer(person.Id, "@Id");
-
-                ParameterRegistrer(name, "@Name");
-
-                ParameterRegistrer(surname, "@Surname");
-
-                ParameterRegistrer(admin, "@Admin");
-
-                ParameterRegistrer(major, "@Major");
-
-                ParameterRegistrer(minor, "@Minor");
+                command.Parameters.Add(ParameterRegistrer(person.Id, "@Id"));
+                command.Parameters.Add(ParameterRegistrer(name ?? person.Name, "@Name"));
+                command.Parameters.Add(ParameterRegistrer(surname ?? person.SurName, "@Surname"));
+                command.Parameters.Add(ParameterRegistrer(admin ?? person.IsAdmin, "@Admin"));
+                command.Parameters.Add(ParameterRegistrer(major ?? person.Major, "@Major"));
+                command.Parameters.Add(ParameterRegistrer(minor ?? person.Minor, "@Minor"));
 
                 var result = command.ExecuteScalar();
             }
@@ -113,7 +105,7 @@ namespace EventsLogic
         /// <param name="makeList"> Роль Make. </param>
         /// <param name="markList"> Роль Mark. </param>
         public static List<string> FillAdminList()
-        {                
+        {
             var result = new List<string>();
 
             foreach (var user in FindUsers(UserFindBy.Admin, true))
@@ -192,7 +184,7 @@ namespace EventsLogic
         /// <returns> Строковое представление информации о пользователе. </returns>
         public static string AboutMe(string id)
         {
-            Person user = FindUsers(UserFindBy.Id,id).First();
+            Person user = FindUsers(UserFindBy.Id, id).First();
             return
                 $"Id: {user.Id}\n" +
                 $"Имя: {user.Name}\n" +
@@ -206,9 +198,56 @@ namespace EventsLogic
         #region Работа с базой данных событий
 
 
-        public static void FillActualEvents(out List<Event> actualEvents)
+        public static List<Event> FindEvents(EventFindBy findBy, object desired)
         {
-            actualEvents = new List<Event>();
+            string sqlExpression = $"EventFindBy{findBy}";
+            var result = new List<Event>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                var command = new SqlCommand(sqlExpression, connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                };
+                switch (findBy)
+                {
+                    case EventFindBy.Id:
+                        command.Parameters.Add(ParameterRegistrer(desired, "@Id"));
+                        break;
+                    case EventFindBy.Name:
+                        command.Parameters.Add(ParameterRegistrer(desired, "@Name"));
+                        break;
+                    case EventFindBy.Actual:
+                        command.Parameters.Add(ParameterRegistrer(desired, "@Actual"));
+                        break;
+                    case EventFindBy.Date:
+                        command.Parameters.Add(ParameterRegistrer(desired, "@Date"));
+                        break;
+                }
+                SqlDataReader reader = command.ExecuteReader();
+
+                for (int i = 0; i < int.MaxValue; i++)
+                    if (reader.Read())
+                        result.Add(new Event()
+                        {
+                            Id = (int)reader["Id"],
+                            IsActual = (bool)reader["Actual"],
+                            Name = (string)reader["Name"],
+                            Place = (string)reader["Place"],
+                            Seats = (int)reader["Count"],
+                            Describe = (string)reader["Describe"],
+                            Date = (DateTime)reader["Date"],
+                            Time = (DateTime)reader["Time"],
+                        });
+                    else break;
+            }
+            return result;
+        }
+
+        public static List<Event> FillActualEvents()
+        {
+            var result = new List<Event>();
             string sqlExpression = "FindActualEvents";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -223,22 +262,20 @@ namespace EventsLogic
 
                 for (int i = 0; i < int.MaxValue; i++)
                     if (reader.Read())
-                    {
-                        actualEvents.Add(new Event()
+                        result.Add(new Event()
                         {
                             Id = (int)reader["Id"],
                             IsActual = (bool)reader["Actual"],
                             Name = (string)reader["Name"],
                             Place = (string)reader["Place"],
-                            Count = (int)reader["Count"],
+                            Seats = (int)reader["Count"],
                             Describe = (string)reader["Describe"],
                             Date = (DateTime)reader["Date"],
                             Time = (DateTime)reader["Time"],
                         });
-                        Console.WriteLine($"Событие \"{actualEvents.Last().Name}\" добавлено");
-                    }
                     else break;
             }
+            return result;
         }
 
 
