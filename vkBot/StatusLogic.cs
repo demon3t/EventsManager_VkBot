@@ -1,4 +1,5 @@
 ﻿using EventsLogic;
+using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,11 +16,18 @@ namespace vkBot
             MakeEvent = 2,
         }
 
+        private enum Minor
+        {
+            First = 0,
+            Second = 1,
+            Third = 2,
+        }
+
         internal static void FirstOccurrence(Person person, MessageReceivedEventArgs e)
         {
             MessageConstructor.FirstOccurrence(person, e);
 
-            DatebaseLogic.UserSetParams(person, major: 1, minor: 0);
+            DatebaseLogic.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
         }
     }
 }

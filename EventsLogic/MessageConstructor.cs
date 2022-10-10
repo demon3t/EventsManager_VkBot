@@ -32,7 +32,7 @@ namespace EventsLogic
         public static void FirstOccurrence(Person person, MessageReceivedEventArgs e)
         {
             string message =
-                $"Привет {person.Name}.Данный бот может оповещать и записывать на доступные мероприятия.\n" +
+                $"Привет {person.Name}. Данный бот может оповещать и записывать на доступные мероприятия.\n" +
                 $"А так же напоминать о мероприятиях на которые Вы записались.";
 
             SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));

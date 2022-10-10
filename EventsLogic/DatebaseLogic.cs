@@ -66,7 +66,7 @@ namespace EventsLogic
 
 
         public static void UserSetParams(Person person,
-            string? name = null, string? surname = null, bool? admin = null, int? major = 0, int? minor = null)
+            string? name = null, string? surname = null, bool? admin = null, int? major = null, int? minor = null)
         {
             string sqlExpression = "UserSetParams";
 
@@ -77,15 +77,20 @@ namespace EventsLogic
                 {
                     CommandType = System.Data.CommandType.StoredProcedure
                 };
-                ParameterRegistrer(person.Id, "Id");
-                ParameterRegistrer(name ?? person.Name, "Name");
-                ParameterRegistrer(surname ?? person.SurName, "Surname");
-                ParameterRegistrer(admin ?? person.IsAdmin, "Admin");
-                ParameterRegistrer(major ?? person.Major, "Major");
-                ParameterRegistrer(minor ?? person.Minor, "Minor");
+
+                ParameterRegistrer(person.Id, "@Id");
+
+                ParameterRegistrer(name, "@Name");
+
+                ParameterRegistrer(surname, "@Surname");
+
+                ParameterRegistrer(admin, "@Admin");
+
+                ParameterRegistrer(major, "@Major");
+
+                ParameterRegistrer(minor, "@Minor");
 
                 var result = command.ExecuteScalar();
-                Console.WriteLine($"Было: {result}");
             }
         }
 
@@ -140,24 +145,24 @@ namespace EventsLogic
                 switch (findBy)
                 {
                     case UserFindBy.Id:
-                        command.Parameters.Add(ParameterRegistrer(desired, "Id"));
+                        command.Parameters.Add(ParameterRegistrer(desired, "@Id"));
                         break;
                     case UserFindBy.Admin:
-                        command.Parameters.Add(ParameterRegistrer(desired, "Admin"));
+                        command.Parameters.Add(ParameterRegistrer(desired, "@Admin"));
                         break;
                     case UserFindBy.Name:
-                        command.Parameters.Add(ParameterRegistrer(desired, "Name"));
+                        command.Parameters.Add(ParameterRegistrer(desired, "@Name"));
                         break;
                     case UserFindBy.Surname:
-                        command.Parameters.Add(ParameterRegistrer(desired, "Surname"));
+                        command.Parameters.Add(ParameterRegistrer(desired, "@Surname"));
                         break;
                     case UserFindBy.NameAndSurname:
                         {
                             int scSymbol = ((string)desired).IndexOf('|');
                             command.Parameters.Add(ParameterRegistrer(((string)desired)
-                                .Remove(0, scSymbol), "Param1"));
+                                .Remove(0, scSymbol), "@Param1"));
                             command.Parameters.Add(ParameterRegistrer(((string)desired)
-                                .Remove(scSymbol + 1, ((string)desired).Length - scSymbol), "Param2"));
+                                .Remove(scSymbol + 1, ((string)desired).Length - scSymbol), "@Param2"));
                         }
                         break;
                 }
