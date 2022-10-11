@@ -51,9 +51,9 @@ namespace vkBot
                 case "Создать мероприятие":
                     {
                         if (!person.IsAdmin) return;
+                        Event.CreateEvent(person.Id);
                         MessageConstructor.CreateEvents(person, e);
                         DatebaseLogic.UserSetParams(person, major: (int)Major.CreateEvent, minor: (int)Minor.First);
-                        Event.CreateEvent(person.Id);
                     }
                     return;
                 case "Мои мероприятия":
@@ -107,37 +107,37 @@ namespace vkBot
             {
                 case "Название":
                     {
-                        MessageConstructor.WatchEvents_Back(person, e);
+                        MessageConstructor.WaitingParameters_Name(person, e);
                         DatebaseLogic.UserSetParams(person, minor: (int)Minor.First);
                     }
                     return;
-                case "Опивание":
+                case "Опиcание":
                     {
-                        MessageConstructor.WatchEvents_Back(person, e);
+                        MessageConstructor.WaitingParameters_Describe(person, e);
                         DatebaseLogic.UserSetParams(person, minor: (int)Minor.Second);
                     }
                     return;
                 case "Дата/Время начала":
                     {
-                        MessageConstructor.WatchEvents_Back(person, e);
+                        MessageConstructor.WaitingParameters_StartTime(person, e);
                         DatebaseLogic.UserSetParams(person, minor: (int)Minor.Third);
                     }
                     return;
                 case "Дата/Время конца":
                     {
-                        MessageConstructor.WatchEvents_Back(person, e);
+                        MessageConstructor.WaitingParameters_EndTime(person, e);
                         DatebaseLogic.UserSetParams(person, minor: (int)Minor.Fourth);
                     }
                     return;
                 case "Число волонтёров":
                     {
-                        MessageConstructor.WatchEvents_Back(person, e);
+                        MessageConstructor.WaitingParameters_Seats(person, e);
                         DatebaseLogic.UserSetParams(person, minor: (int)Minor.Five);
                     }
                     return;
                 case "Место":
                     {
-                        MessageConstructor.WatchEvents_Back(person, e);
+                        MessageConstructor.WaitingParameters_Place(person, e);
                         DatebaseLogic.UserSetParams(person, minor: (int)Minor.Sixth);
                     }
                     return;
@@ -145,11 +145,55 @@ namespace vkBot
                     {
                         MessageConstructor.WatchEvents_Back(person, e);
                         DatebaseLogic.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
+                        Event.RemoveEvent(person.Id);
                     }
                     return;
                 default:
                     {
+                        Event @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
 
+                        switch ((Minor)person.Minor)
+                        {
+                            case Minor.First:
+                                {
+                                    @event.Name = e.Message.Text;
+                                    MessageConstructor.CreateEvent(person, e);
+                                }
+                                return;
+                            case Minor.Second:
+                                {
+                                    @event.Describe = e.Message.Text;
+                                    MessageConstructor.CreateEvent(person, e);
+                                }
+                                return;
+                            case Minor.Third:
+                                {
+                                    if (DateTime.TryParse(e.Message.Text, out DateTime dateTime))
+                                        @event.StartTime = dateTime;
+                                    MessageConstructor.CreateEvent(person, e);
+                                }
+                                return;
+                            case Minor.Fourth:
+                                {
+                                    if (DateTime.TryParse(e.Message.Text, out DateTime dateTime))
+                                        @event.EndTime = dateTime;
+                                    MessageConstructor.CreateEvent(person, e);
+                                }
+                                return;
+                            case Minor.Five:
+                                {
+                                    if (int.TryParse(e.Message.Text, out int seats))
+                                        @event.Seats = seats;
+                                    MessageConstructor.CreateEvent(person, e);
+                                }
+                                return;
+                            case Minor.Sixth:
+                                {
+                                    @event.Place = e.Message.Text;
+                                    MessageConstructor.CreateEvent(person, e);
+                                }
+                                return;
+                        }
                     }
                     return;
             }

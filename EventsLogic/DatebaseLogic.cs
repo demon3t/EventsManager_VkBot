@@ -237,8 +237,8 @@ namespace EventsLogic
                             Place = (string)reader["Place"],
                             Seats = (int)reader["Count"],
                             Describe = (string)reader["Describe"],
-                            Date = (DateTime)reader["Date"],
-                            Time = (DateTime)reader["Time"],
+                            StartTime = (DateTime)reader["StartTime"],
+                            EndTime = (DateTime)reader["EndTime"],
                         });
                     else break;
             }
@@ -248,7 +248,7 @@ namespace EventsLogic
         public static List<Event> FillActualEvents()
         {
             var result = new List<Event>();
-            string sqlExpression = "FindActualEvents";
+            string sqlExpression = "EventFindByActual";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -257,6 +257,8 @@ namespace EventsLogic
                 {
                     CommandType = System.Data.CommandType.StoredProcedure
                 };
+
+                command.Parameters.Add(ParameterRegistrer(true, "@Actual"));
 
                 SqlDataReader reader = command.ExecuteReader();
 
@@ -268,10 +270,10 @@ namespace EventsLogic
                             IsActual = (bool)reader["Actual"],
                             Name = (string)reader["Name"],
                             Place = (string)reader["Place"],
-                            Seats = (int)reader["Count"],
+                            Seats = (int)reader["Seats"],
                             Describe = (string)reader["Describe"],
-                            Date = (DateTime)reader["Date"],
-                            Time = (DateTime)reader["Time"],
+                            StartTime = (DateTime)reader["StartTime"],
+                            EndTime = (DateTime)reader["EndTime"],
                         });
                     else break;
             }

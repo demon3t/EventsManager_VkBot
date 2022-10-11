@@ -27,6 +27,18 @@ namespace EventsLogic
             });
         }
 
+        private static void SendMessage(MessageReceivedEventArgs e, string message)
+        {
+            if (vkBot == null) return;
+
+            vkBot.Api.Messages.Send(new MessagesSendParams()
+            {
+                Message = message,
+                PeerId = e.Message.PeerId,
+                RandomId = Environment.TickCount,
+            });
+        }
+
         #region FirstOccurrence
 
         public static void FirstOccurrence(Person person, MessageReceivedEventArgs e)
@@ -68,10 +80,21 @@ namespace EventsLogic
 
         public static void CreateEvents(Person person, MessageReceivedEventArgs e)
         {
-            string message =
-                "Необходимо заполнить всю обязательную информация (кнопки красного цвета).";
+            Event @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
 
-            SendMessage(e, message, KeyboardConstructor.CreateEvents(e));
+            string message =
+                $"Необходимо заполнить всю обязательную информация (кнопки красного цвета).\n" +
+                $"Предосмотр:\n" +
+                $"{@event.Name ?? "Како-то название" } \n" +
+                $"C {@event.StartTime}\n" +
+                $"до {@event.EndTime} \n" +
+                $"нужны {@event.Seats} волонтёра(ов)\n" +
+                $"Место проветения: {@event.Place ?? "какое-то место"}\n" +
+                $"\n" +
+                $"\n" +
+                $"\n";
+
+            SendMessage(e, message, KeyboardConstructor.CreateEvents(e, @event));
         }
 
         public static void CompletEvents(Person person, MessageReceivedEventArgs e)
@@ -96,6 +119,81 @@ namespace EventsLogic
 
         #endregion
 
+        #region CreateEvent
+
+        public static void CreateEvent(Person person, MessageReceivedEventArgs e)
+        {
+            Event @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
+
+            string message =
+                $"Необходимо заполнить всю обязательную информация (кнопки красного цвета).\n" +
+                $"Предосмотр:\n" +
+                $"{@event.Name ?? "Како-то название"} \n" +
+                $"C {@event.StartTime}\n" +
+                $"до {@event.EndTime} \n" +
+                $"нужны {@event.Seats} волонтёра(ов)\n" +
+                $"Место проветения: {@event.Place ?? "какое-то место"}\n" +
+                $"\n" +
+                $"\n" +
+                $"\n";
+
+            SendMessage(e, message, KeyboardConstructor.CreateEvents(e, @event));
+        }
+
+
+
+        #endregion
+
+
+        #region WaitingParameters
+
+        public static void WaitingParameters_Name(Person person, MessageReceivedEventArgs e)
+        {
+            string message = "Обязательное поля для заполнения";
+
+            SendMessage(e, message);
+        }
+
+        public static void WaitingParameters_Describe(Person person, MessageReceivedEventArgs e)
+        {
+            string message = "Не обязательное поля для заполнения";
+
+            SendMessage(e, message);
+        }
+
+        public static void WaitingParameters_StartTime(Person person, MessageReceivedEventArgs e)
+        {
+            string message =
+                "Обязательное поля для заполнения\n" +
+                "Формат записи: дд.мм.гггг чч:мм";
+
+            SendMessage(e, message);
+        }
+
+        public static void WaitingParameters_EndTime(Person person, MessageReceivedEventArgs e)
+        {
+            string message =
+                "Обязательное поля для заполнения\n" +
+                "Формат записи: дд.мм.гггг чч:мм";
+
+            SendMessage(e, message);
+        }
+
+        public static void WaitingParameters_Seats(Person person, MessageReceivedEventArgs e)
+        {
+            string message = "Обязательное поля для заполнения";
+
+            SendMessage(e, message);
+        }
+
+        public static void WaitingParameters_Place(Person person, MessageReceivedEventArgs e)
+        {
+            string message = "Не обязательное поля для заполнения";
+
+            SendMessage(e, message);
+        }
+
+        #endregion
     }
 }
 

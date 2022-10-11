@@ -1,4 +1,6 @@
-﻿using VkBotFramework.Models;
+﻿using System;
+using System.Data;
+using VkBotFramework.Models;
 using VkNet.Enums.SafetyEnums;
 using VkNet.Model.Keyboard;
 
@@ -38,7 +40,7 @@ namespace EventsLogic
         {
             KeyboardBuilder keyboard = new KeyboardBuilder();
 
-            foreach (var _event in actualEveints)
+            foreach (var _event in Event.ActualEvents)
             {
                 if (_event.Name == null) continue;
                 keyboard.AddButton(_event.Name.ToString(), "").AddLine();
@@ -59,18 +61,19 @@ namespace EventsLogic
             return keyboard;
         }
 
-        internal static KeyboardBuilder CreateEvents(MessageReceivedEventArgs e)
+        internal static KeyboardBuilder CreateEvents(MessageReceivedEventArgs e, Event @event)
         {
             KeyboardBuilder keyboard = new KeyboardBuilder();
 
             keyboard
-                .AddButton("Название", "", Negative).AddLine()
-                .AddButton("Опивание", "", Negative).AddLine()
-                .AddButton("Дата", "", Negative).AddLine()
-                .AddButton("Время", "", Negative).AddLine()
-                .AddButton("Число волонтёров", "", Negative).AddLine()
-                .AddButton("Место", "", Default).AddLine()
-                .AddButton("Назад", "", Default);
+                .AddButton("Название", "", string.IsNullOrWhiteSpace(@event.Name) ? Negative : Positive).AddLine()
+                .AddButton("Дата/Время начала", "", @event.StartTime < DateTime.Now ? Negative : Positive).AddLine()
+                .AddButton("Дата/Время конца", "", @event.EndTime < @event.StartTime ? Negative : Positive).AddLine()
+                .AddButton("Число волонтёров", "", @event.Seats < 1 ? Negative : Positive).AddLine()
+                .AddButton("Опиcание", "", string.IsNullOrWhiteSpace(@event.Describe) ? Default : Positive).AddLine()
+                .AddButton("Место", "", string.IsNullOrWhiteSpace(@event.Place) ? Default : Positive).AddLine()
+                .AddButton("Назад", "", Default)
+                .SetOneTime();
             return keyboard;
         }
 
@@ -85,11 +88,5 @@ namespace EventsLogic
         }
 
         #endregion
-
-        #region WatchingEvents
-
-        #endregion
-
-
     }
 }

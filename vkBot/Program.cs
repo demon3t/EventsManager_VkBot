@@ -62,6 +62,7 @@ namespace vkBot
                 case 3:
                     return;
                 case 4:
+                    StatusLogic.CreateEvent(person, e);
                     return;
                 default: return;
             }
