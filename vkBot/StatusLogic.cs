@@ -1,4 +1,5 @@
 ﻿using EventsLogic;
+using EventsLogic.DatabaseRequest;
 using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace vkBot
         internal static void FirstOccurrence(Person person, MessageReceivedEventArgs e)
         {
             MessageConstructor.FirstOccurrence(person, e);
-            DatebaseLogic.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
+            UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
         }
 
 
@@ -45,27 +46,27 @@ namespace vkBot
                 case "Посмотреть мероприятия":
                     {
                         MessageConstructor.WatchEvents(person, e);
-                        DatebaseLogic.UserSetParams(person, major: (int)Major.LookEvents, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.LookEvents, minor: (int)Minor.First);
                     }
                     return;
                 case "Создать мероприятие":
                     {
                         if (!person.IsAdmin) return;
                         Event.CreateEvent(person.Id);
-                        MessageConstructor.CreateEvents(person, e);
-                        DatebaseLogic.UserSetParams(person, major: (int)Major.CreateEvent, minor: (int)Minor.First);
+                        MessageConstructor.CreateEvent(person, e);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.CreateEvent, minor: (int)Minor.First);
                     }
                     return;
                 case "Мои мероприятия":
                     {
                         MessageConstructor.MyEvents(person, e);
-                        DatebaseLogic.UserSetParams(person, major: (int)Major.MyEvents, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.MyEvents, minor: (int)Minor.First);
                     }
                     return;
                 case "Завершённые мероприятия":
                     {
                         MessageConstructor.CompletEvents(person, e);
-                        DatebaseLogic.UserSetParams(person, major: (int)Major.CompletEvents, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.CompletEvents, minor: (int)Minor.First);
                     }
                     return;
                 case "Информация":
@@ -76,7 +77,7 @@ namespace vkBot
                 case "Обо мне":
                     {
                         MessageConstructor.AboutMe(person, e);
-                        DatebaseLogic.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
                     }
                     return;
                 default: return;
@@ -90,7 +91,7 @@ namespace vkBot
                 case "Назад":
                     {
                         MessageConstructor.WatchEvents_Back(person, e);
-                        DatebaseLogic.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
                     }
                     return;
                 default:
@@ -105,46 +106,54 @@ namespace vkBot
         {
             switch (e.Message.Text)
             {
+                case "Создать":
+                    {
+                        var @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
+                        MessageConstructor.OnCreateEvent(person, e);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor:(int)Minor.First);
+                        EventsDatabase.AddEvent(@event);
+                    }
+                    return;
                 case "Название":
                     {
                         MessageConstructor.WaitingParameters_Name(person, e);
-                        DatebaseLogic.UserSetParams(person, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, minor: (int)Minor.First);
                     }
                     return;
                 case "Опиcание":
                     {
                         MessageConstructor.WaitingParameters_Describe(person, e);
-                        DatebaseLogic.UserSetParams(person, minor: (int)Minor.Second);
+                        UsersDatabase.UserSetParams(person, minor: (int)Minor.Second);
                     }
                     return;
-                case "Дата/Время начала":
+                case "Время начала":
                     {
                         MessageConstructor.WaitingParameters_StartTime(person, e);
-                        DatebaseLogic.UserSetParams(person, minor: (int)Minor.Third);
+                        UsersDatabase.UserSetParams(person, minor: (int)Minor.Third);
                     }
                     return;
-                case "Дата/Время конца":
+                case "Время конца":
                     {
                         MessageConstructor.WaitingParameters_EndTime(person, e);
-                        DatebaseLogic.UserSetParams(person, minor: (int)Minor.Fourth);
+                        UsersDatabase.UserSetParams(person, minor: (int)Minor.Fourth);
                     }
                     return;
                 case "Число волонтёров":
                     {
                         MessageConstructor.WaitingParameters_Seats(person, e);
-                        DatebaseLogic.UserSetParams(person, minor: (int)Minor.Five);
+                        UsersDatabase.UserSetParams(person, minor: (int)Minor.Five);
                     }
                     return;
                 case "Место":
                     {
                         MessageConstructor.WaitingParameters_Place(person, e);
-                        DatebaseLogic.UserSetParams(person, minor: (int)Minor.Sixth);
+                        UsersDatabase.UserSetParams(person, minor: (int)Minor.Sixth);
                     }
                     return;
                 case "Назад":
                     {
                         MessageConstructor.WatchEvents_Back(person, e);
-                        DatebaseLogic.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
                         Event.RemoveEvent(person.Id);
                     }
                     return;

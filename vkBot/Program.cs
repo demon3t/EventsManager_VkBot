@@ -1,4 +1,5 @@
 ﻿using EventsLogic;
+using EventsLogic.DatabaseRequest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,17 +35,17 @@ namespace vkBot
             Console.WriteLine($"{DateTime.Now}: Bot started");  // оповещение запуска бота
 
 
-            Person.Admins = DatebaseLogic.FindUsers(UserFindBy.Admin, true);         // загрузка списка Адмистроторов и Помощников
-            Event.ActualEvents = DatebaseLogic.FillActualEvents();    // загрузка списка актуальных мероприятий
+            Person.Admins = UsersDatabase.FindUsers(UserFindBy.Admin, true);         // загрузка списка Адмистроторов и Помощников
+            Event.ActualEvents = EventsDatabase.FillActualEvents();    // загрузка списка актуальных мероприятий
 
             vkBot.OnMessageReceived += VkBot_OnMessageReceived;
         }
 
         private static void VkBot_OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            if (DatebaseLogic.CheckUserToId(e.Message.PeerId.ToString())) RegisterUser(e); // регистрация навого пользователя
+            if (UsersDatabase.CheckUserToId(e.Message.PeerId.ToString())) RegisterUser(e); // регистрация навого пользователя
 
-            var person = DatebaseLogic.FindUsers(UserFindBy.Id, e.Message.PeerId).First();
+            var person = UsersDatabase.FindUsers(UserFindBy.Id, e.Message.PeerId).First();
 
             Console.WriteLine($"{DateTime.Now.ToString().Replace(' ', '/')}  {person.SurName} {person.Name} {person.Id} : {e.Message.Text}");
 
@@ -76,7 +77,7 @@ namespace vkBot
                 GroupId = (ulong?)e.Message.PeerId,
                 Extended = true,
             };
-            DatebaseLogic.AddUser(e.Message.PeerId.ToString(),
+            UsersDatabase.AddUser(e.Message.PeerId.ToString(),
                 vkBot.Api.Messages.GetConversations(param).Profiles[0].FirstName,
                 vkBot.Api.Messages.GetConversations(param).Profiles[0].LastName, false);
         }

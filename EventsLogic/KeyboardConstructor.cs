@@ -61,18 +61,37 @@ namespace EventsLogic
             return keyboard;
         }
 
+        /// <summary>
+        /// Клавиатура при создании мероприятия
+        /// </summary>
         internal static KeyboardBuilder CreateEvents(MessageReceivedEventArgs e, Event @event)
         {
             KeyboardBuilder keyboard = new KeyboardBuilder();
 
+            if (@event.CheackReady())
+                keyboard
+                .AddButton("Создать", "", Primary).AddLine();
+
             keyboard
-                .AddButton("Название", "", string.IsNullOrWhiteSpace(@event.Name) ? Negative : Positive).AddLine()
-                .AddButton("Дата/Время начала", "", @event.StartTime < DateTime.Now ? Negative : Positive).AddLine()
-                .AddButton("Дата/Время конца", "", @event.EndTime < @event.StartTime ? Negative : Positive).AddLine()
-                .AddButton("Число волонтёров", "", @event.Seats < 1 ? Negative : Positive).AddLine()
-                .AddButton("Опиcание", "", string.IsNullOrWhiteSpace(@event.Describe) ? Default : Positive).AddLine()
-                .AddButton("Место", "", string.IsNullOrWhiteSpace(@event.Place) ? Default : Positive).AddLine()
-                .AddButton("Назад", "", Default)
+                .AddButton("Название", "",
+                string.IsNullOrWhiteSpace(@event.Name) ? Negative : Positive)
+
+                .AddButton("Опиcание", "",
+                string.IsNullOrWhiteSpace(@event.Describe) ? Default : Positive).AddLine()
+
+                .AddButton("Время начала", "",
+                @event.StartTime < DateTime.Now ? Negative : Positive)
+
+                .AddButton("Время конца", "",
+                (@event.EndTime < @event.StartTime && @event.EndTime < DateTime.Now) ? Negative : Positive).AddLine()
+
+                .AddButton("Число волонтёров", "",
+                @event.Seats < 1 ? Negative : Positive)
+
+                .AddButton("Место", "",
+                string.IsNullOrWhiteSpace(@event.Place) ? Default : Positive).AddLine()
+
+                .AddButton("Назад","Кнопка возвращает на главное меню" , Default)
                 .SetOneTime();
             return keyboard;
         }

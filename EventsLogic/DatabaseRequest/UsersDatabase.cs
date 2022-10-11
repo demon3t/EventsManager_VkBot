@@ -1,35 +1,15 @@
-﻿using System;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 using System.Linq;
-using VkNet.Model;
+using System.Text;
 
-namespace EventsLogic
+namespace EventsLogic.DatabaseRequest
 {
-    public enum UserFindBy
-    {
-        Id,
-        Admin,
-        Name,
-        Surname,
-        NameAndSurname
-    }
-
-    public enum EventFindBy
-    {
-        Id,
-        Name,
-        Actual,
-        Date
-    }
-
-
-    public static class DatebaseLogic
+    public enum UserFindBy { Id, Admin, Name, Surname, NameAndSurname }
+    public class UsersDatabase
     {
         private static readonly string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Nipa\\source\\repos\\vkBot\\EventsLogic\\Database.mdf;Integrated Security = True";
-
-        #region Работа с базой данных пользователей
 
         /// <summary>
         /// Добавляет пользователя в базу данных.
@@ -56,15 +36,20 @@ namespace EventsLogic
                 command.Parameters.Add(ParameterRegistrer(admin, "@Admin"));
                 command.Parameters.Add(ParameterRegistrer(0, "@Major"));
                 command.Parameters.Add(ParameterRegistrer(0, "@Minor"));
-                var result = command.ExecuteScalar();
-
-                Console.WriteLine($"Id добавленного объекта:{result}");
+                command.ExecuteScalar();
             }
         }
 
-
-        public static void UserSetParams(Person person,
-            string? name = null, string? surname = null, bool? admin = null, int? major = null, int? minor = null)
+        /// <summary>
+        /// Изменияе параметры Пользователя в базе данных
+        /// </summary>
+        /// <param name="person"> Пользователь. </param>
+        /// <param name="name"> Имя,изменияемый параметр. </param>
+        /// <param name="surname"> Фамилия,изменияемый параметр. </param>
+        /// <param name="admin"> Администрирование,изменияемый параметр. </param>
+        /// <param name="major"> Мажор,изменияемый параметр. </param>
+        /// <param name="minor"> Минор,изменияемый параметр. </param>
+        public static void UserSetParams(Person person, string? name = null, string? surname = null, bool? admin = null, int? major = null, int? minor = null)
         {
             string sqlExpression = "UserSetParams";
 
@@ -81,11 +66,9 @@ namespace EventsLogic
                 command.Parameters.Add(ParameterRegistrer(admin ?? person.IsAdmin, "@Admin"));
                 command.Parameters.Add(ParameterRegistrer(major ?? person.Major, "@Major"));
                 command.Parameters.Add(ParameterRegistrer(minor ?? person.Minor, "@Minor"));
-
-                var result = command.ExecuteScalar();
+                command.ExecuteScalar();
             }
         }
-
 
         /// <summary>
         /// Проверка наличия пользователя в базе данных.
@@ -96,25 +79,6 @@ namespace EventsLogic
         {
             return FindUsers(UserFindBy.Id, id).Count == 0;
         }
-
-
-        /// <summary>
-        /// Заполнение приоритетных ролей в List.
-        /// </summary>
-        /// <param name="adminList"> Роль Admin. </param>
-        /// <param name="makeList"> Роль Make. </param>
-        /// <param name="markList"> Роль Mark. </param>
-        public static List<string> FillAdminList()
-        {
-            var result = new List<string>();
-
-            foreach (var user in FindUsers(UserFindBy.Admin, true))
-            {
-                result.Add(user.Id.ToString());
-            }
-            return result;
-        }
-
 
         /// <summary>
         /// Нахождение всех Пользователей по заданномк параметру.
@@ -176,7 +140,6 @@ namespace EventsLogic
             return result;
         }
 
-
         /// <summary>
         /// Вывод данных о пользователе
         /// </summary>
@@ -192,96 +155,12 @@ namespace EventsLogic
                 $"Администратор: {user.IsAdmin}\n";
         }
 
-
-        #endregion
-
-        #region Работа с базой данных событий
-
-
-        public static List<Event> FindEvents(EventFindBy findBy, object desired)
-        {
-            string sqlExpression = $"EventFindBy{findBy}";
-            var result = new List<Event>();
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                var command = new SqlCommand(sqlExpression, connection)
-                {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                };
-                switch (findBy)
-                {
-                    case EventFindBy.Id:
-                        command.Parameters.Add(ParameterRegistrer(desired, "@Id"));
-                        break;
-                    case EventFindBy.Name:
-                        command.Parameters.Add(ParameterRegistrer(desired, "@Name"));
-                        break;
-                    case EventFindBy.Actual:
-                        command.Parameters.Add(ParameterRegistrer(desired, "@Actual"));
-                        break;
-                    case EventFindBy.Date:
-                        command.Parameters.Add(ParameterRegistrer(desired, "@Date"));
-                        break;
-                }
-                SqlDataReader reader = command.ExecuteReader();
-
-                for (int i = 0; i < int.MaxValue; i++)
-                    if (reader.Read())
-                        result.Add(new Event()
-                        {
-                            Id = (int)reader["Id"],
-                            IsActual = (bool)reader["Actual"],
-                            Name = (string)reader["Name"],
-                            Place = (string)reader["Place"],
-                            Seats = (int)reader["Count"],
-                            Describe = (string)reader["Describe"],
-                            StartTime = (DateTime)reader["StartTime"],
-                            EndTime = (DateTime)reader["EndTime"],
-                        });
-                    else break;
-            }
-            return result;
-        }
-
-        public static List<Event> FillActualEvents()
-        {
-            var result = new List<Event>();
-            string sqlExpression = "EventFindByActual";
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                var command = new SqlCommand(sqlExpression, connection)
-                {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                };
-
-                command.Parameters.Add(ParameterRegistrer(true, "@Actual"));
-
-                SqlDataReader reader = command.ExecuteReader();
-
-                for (int i = 0; i < int.MaxValue; i++)
-                    if (reader.Read())
-                        result.Add(new Event()
-                        {
-                            Id = (int)reader["Id"],
-                            IsActual = (bool)reader["Actual"],
-                            Name = (string)reader["Name"],
-                            Place = (string)reader["Place"],
-                            Seats = (int)reader["Seats"],
-                            Describe = (string)reader["Describe"],
-                            StartTime = (DateTime)reader["StartTime"],
-                            EndTime = (DateTime)reader["EndTime"],
-                        });
-                    else break;
-            }
-            return result;
-        }
-
-
-        #endregion
+        /// <summary>
+        /// Регистрация параметра в SQL запросе
+        /// </summary>
+        /// <param name="value"> Значение параметра. </param>
+        /// <param name="paramName"> Название параметра. </param>
+        /// <returns></returns>
         private static SqlParameter ParameterRegistrer(object? value, string paramName)
         {
             return new SqlParameter

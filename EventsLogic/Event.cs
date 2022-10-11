@@ -41,6 +41,18 @@ namespace EventsLogic
 
         #endregion
 
+        public bool CheackReady()
+        {
+            if (string.IsNullOrWhiteSpace(Name)) return false;
+            if (StartTime < DateTime.Now) return false;
+            if (EndTime < StartTime) return false;
+            if (Seats < 1) return false;
+            return true;
+        }
+
+         
+
+
         public static void CreateEvent(string personCreated)
         {
             ActualEvents.Add(new Event(personCreated));

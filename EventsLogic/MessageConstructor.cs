@@ -1,9 +1,7 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using EventsLogic.DatabaseRequest;
 using System;
-using System.Collections.Generic;
 using VkBotFramework;
 using VkBotFramework.Models;
-using VkNet.Model;
 using VkNet.Model.Keyboard;
 using VkNet.Model.RequestParams;
 
@@ -12,7 +10,6 @@ namespace EventsLogic
     static public class MessageConstructor
     {
         public static VkBot? vkBot { private get; set; }
-        public static string connectionDbString { private get; set; } = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Nipa\\source\\repos\\vkBot\\EventsLogic\\Database.mdf;Integrated Security=True";
 
         private static void SendMessage(MessageReceivedEventArgs e, string message, KeyboardBuilder keyboard)
         {
@@ -21,9 +18,9 @@ namespace EventsLogic
             vkBot.Api.Messages.Send(new MessagesSendParams()
             {
                 Message = message,
-                PeerId = e.Message.PeerId,
+                UserId = e.Message.PeerId,
                 RandomId = Environment.TickCount,
-                Keyboard = keyboard.Build()
+                Keyboard = keyboard.Build(),
             });
         }
 
@@ -34,7 +31,7 @@ namespace EventsLogic
             vkBot.Api.Messages.Send(new MessagesSendParams()
             {
                 Message = message,
-                PeerId = e.Message.PeerId,
+                UserId = e.Message.PeerId,
                 RandomId = Environment.TickCount,
             });
         }
@@ -57,7 +54,7 @@ namespace EventsLogic
         public static void AboutMe(Person person, MessageReceivedEventArgs e)
         {
             string message =
-                DatebaseLogic.AboutMe(e.Message.PeerId.ToString());
+                UsersDatabase.AboutMe(e.Message.PeerId.ToString());
 
             SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
         }
@@ -78,24 +75,6 @@ namespace EventsLogic
             SendMessage(e, message, KeyboardConstructor.MyEvents(e));
         }
 
-        public static void CreateEvents(Person person, MessageReceivedEventArgs e)
-        {
-            Event @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
-
-            string message =
-                $"Необходимо заполнить всю обязательную информация (кнопки красного цвета).\n" +
-                $"Предосмотр:\n" +
-                $"{@event.Name ?? "Како-то название" } \n" +
-                $"C {@event.StartTime}\n" +
-                $"до {@event.EndTime} \n" +
-                $"нужны {@event.Seats} волонтёра(ов)\n" +
-                $"Место проветения: {@event.Place ?? "какое-то место"}\n" +
-                $"\n" +
-                $"\n" +
-                $"\n";
-
-            SendMessage(e, message, KeyboardConstructor.CreateEvents(e, @event));
-        }
 
         public static void CompletEvents(Person person, MessageReceivedEventArgs e)
         {
@@ -113,7 +92,6 @@ namespace EventsLogic
         public static void WatchEvents_Back(Person person, MessageReceivedEventArgs e)
         {
             string message = "Возвращаю на главное меню";
-
             SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
         }
 
@@ -121,6 +99,9 @@ namespace EventsLogic
 
         #region CreateEvent
 
+        /// <summary>
+        /// Сообщение измменения параметра мероприятия
+        /// </summary>
         public static void CreateEvent(Person person, MessageReceivedEventArgs e)
         {
             Event @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
@@ -132,15 +113,24 @@ namespace EventsLogic
                 $"C {@event.StartTime}\n" +
                 $"до {@event.EndTime} \n" +
                 $"нужны {@event.Seats} волонтёра(ов)\n" +
-                $"Место проветения: {@event.Place ?? "какое-то место"}\n" +
-                $"\n" +
-                $"\n" +
-                $"\n";
+                $"Место проветения: {@event.Place ?? "какое-то место"}\n";
 
             SendMessage(e, message, KeyboardConstructor.CreateEvents(e, @event));
         }
 
 
+        /// <summary>
+        /// Сообщение создания Мероприятия
+        /// </summary>
+        public static void OnCreateEvent(Person person, MessageReceivedEventArgs e)
+        {
+            Event @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
+
+            string message =
+                "Событие зодано";
+
+            SendMessage(e, message, KeyboardConstructor.CreateEvents(e, @event));
+        }
 
         #endregion
 
