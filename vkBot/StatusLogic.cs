@@ -53,6 +53,7 @@ namespace vkBot
                         if (!person.IsAdmin) return;
                         MessageConstructor.CreateEvents(person, e);
                         DatebaseLogic.UserSetParams(person, major: (int)Major.CreateEvent, minor: (int)Minor.First);
+                        Event.CreateEvent(person.Id);
                     }
                     return;
                 case "Мои мероприятия":
@@ -116,13 +117,13 @@ namespace vkBot
                         DatebaseLogic.UserSetParams(person, minor: (int)Minor.Second);
                     }
                     return;
-                case "Дата":
+                case "Дата/Время начала":
                     {
                         MessageConstructor.WatchEvents_Back(person, e);
                         DatebaseLogic.UserSetParams(person, minor: (int)Minor.Third);
                     }
                     return;
-                case "Время":
+                case "Дата/Время конца":
                     {
                         MessageConstructor.WatchEvents_Back(person, e);
                         DatebaseLogic.UserSetParams(person, minor: (int)Minor.Fourth);

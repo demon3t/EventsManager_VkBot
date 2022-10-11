@@ -9,10 +9,17 @@ namespace EventsLogic
     {
         public static List<Event> ActualEvents = new List<Event>();
 
+        private Event(string personCreated)
+        {
+            PersonCreated = personCreated;
+            IsCreated = true;
+            IsActual = true;
+        }
+
         #region свойства
 
-        public bool IsCreated { get; set; } = true;
-
+        public bool IsCreated { get; set; }
+        public string PersonCreated { get; set; } 
         public int? Id { get; set; }
         public bool? IsActual { get; set; }
         public string? Name { get; set; }
@@ -28,6 +35,12 @@ namespace EventsLogic
 
         #endregion
 
+        public static void CreateEvent(string personCreated)
+        {
+            ActualEvents.Add(new Event(personCreated));
+        }
+
+
         public static bool operator ==(Event a, Event b)
         {
             return a.Id == b.Id;
@@ -38,6 +51,7 @@ namespace EventsLogic
         }
         public override bool Equals(object obj)
         {
+            if (obj is Event) return this.Id == ((Event)obj).Id;
             return base.Equals(obj);
         }
         public override int GetHashCode()

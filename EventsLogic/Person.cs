@@ -26,6 +26,7 @@ namespace EventsLogic
         }
         public override bool Equals(object obj)
         {
+            if (obj is Person) return this.Id == ((Person)obj).Id;
             return base.Equals(obj);
         }
         public override int GetHashCode()
