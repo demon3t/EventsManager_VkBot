@@ -45,7 +45,7 @@ namespace EventsLogic
 
             for (int i = person.Minor * EventToList; i < person.Minor * EventToList + EventToList; i++)
             {
-                if (i >= Event.ActualEvents.Count ) break;
+                if (i >= Event.ActualEvents.Count) break;
                 if (Event.ActualEvents[i].Name != null)
                     keyboard.AddButton(Event.ActualEvents[i].Name, "").AddLine();
             }
@@ -59,12 +59,9 @@ namespace EventsLogic
                         .AddLine();
             }
 
-            if (person.Minor < 1)
-            {
-                if (Event.ActualEvents.Count - person.Minor * EventToList > EventToList)
-                    keyboard
-                        .AddButton("->", "", KeyboardButtonColor.Primary).AddLine();
-            }
+            if (Event.ActualEvents.Count - person.Minor * EventToList > EventToList)
+                keyboard
+                    .AddButton("->", "", KeyboardButtonColor.Primary).AddLine();
 
             keyboard
                 .AddButton("Назад", "", KeyboardButtonColor.Primary);

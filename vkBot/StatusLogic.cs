@@ -42,8 +42,8 @@ namespace vkBot
             {
                 case "Посмотреть мероприятия":
                     {
-                        MessageConstructor.WatchEvents(person, e);
                         UsersDatabase.UserSetParams(person, major: (int)Major.LookEvents, minor: 0);
+                        LookEvents(person, e);
                         return;
                     }
                 case "Создать мероприятие":
@@ -88,6 +88,12 @@ namespace vkBot
         {
             switch (e.Message.Text)
             {
+                case "Посмотреть мероприятия":
+                    {
+                        UsersDatabase.UserSetParams(person, major: (int)Major.LookEvents, minor: 0);
+                        MessageConstructor.WatchEvents(person, e);
+                        return;
+                    }
                 case "->":
                     {
                         UsersDatabase.UserSetParams(person, major: (int)Major.LookEvents, minor: person.Minor + 1);
