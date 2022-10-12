@@ -1,7 +1,6 @@
 ﻿using EventsLogic;
 using EventsLogic.DatabaseRequest;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using VkBotFramework;
 using VkBotFramework.Models;
@@ -11,16 +10,10 @@ namespace vkBot
 {
     internal class Program
     {
-
-
-        #region локальные переменные
-
         /// <summary>
         /// API VKBot
         /// </summary>
         private static VkBot vkBot = new VkBot(config.Token, config.URL);
-
-        #endregion
 
         static void Main(string[] args)
         {
@@ -32,18 +25,19 @@ namespace vkBot
 
         private static void VkBot_OnBotStarted(object sender, EventArgs e)
         {
-            Console.WriteLine($"{DateTime.Now}: Bot started");  // оповещение запуска бота
-
-
+            Console.WriteLine($"{DateTime.Now}: Bot started");                       // оповещение запуска бота
             Person.Admins = UsersDatabase.FindUsers(UserFindBy.Admin, true);         // загрузка списка Адмистроторов и Помощников
-            Event.ActualEvents = EventsDatabase.FillActualEvents();    // загрузка списка актуальных мероприятий
+            Event.ActualEvents = EventsDatabase.FillActualEvents();                  // загрузка списка актуальных мероприятий
 
             vkBot.OnMessageReceived += VkBot_OnMessageReceived;
         }
 
         private static void VkBot_OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            if (UsersDatabase.CheckUserToId(e.Message.PeerId.ToString())) RegisterUser(e); // регистрация навого пользователя
+            if (UsersDatabase.CheckUserToId(e.Message.PeerId.ToString()))
+            {
+                RegisterUser(e);
+            }
 
             var person = UsersDatabase.FindUsers(UserFindBy.Id, e.Message.PeerId).First();
 
@@ -58,9 +52,10 @@ namespace vkBot
                     StatusLogic.MainMenu(person, e);
                     return;
                 case 2:
-                    StatusLogic.WatchingEvents(person, e);
+                    StatusLogic.LookEvents(person, e);
                     return;
                 case 3:
+
                     return;
                 case 4:
                     StatusLogic.CreateEvent(person, e);

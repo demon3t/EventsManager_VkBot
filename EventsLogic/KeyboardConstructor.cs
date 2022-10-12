@@ -6,7 +6,7 @@ using VkNet.Model.Keyboard;
 
 namespace EventsLogic
 {
-    internal class KeyboardConstructor
+    internal static class KeyboardConstructor
     {
         static KeyboardButtonColor Primary = KeyboardButtonColor.Primary;
         static KeyboardButtonColor Positive = KeyboardButtonColor.Positive;
@@ -14,7 +14,10 @@ namespace EventsLogic
         static KeyboardButtonColor Default = KeyboardButtonColor.Default;
 
 
+        private const int EventToList = 5;
+
         #region MainMenu
+
         internal static KeyboardBuilder MainMenu(bool IsAdmin)
         {
             KeyboardBuilder keyboard = (KeyboardBuilder)new KeyboardBuilder()
@@ -36,14 +39,31 @@ namespace EventsLogic
             return keyboard;
         }
 
-        internal static KeyboardBuilder WatchEvents(MessageReceivedEventArgs e)
+        internal static KeyboardBuilder WatchEvents(Person person, MessageReceivedEventArgs e)
         {
             KeyboardBuilder keyboard = new KeyboardBuilder();
 
-            foreach (var _event in Event.ActualEvents)
+            for (int i = person.Minor * EventToList; i < person.Minor * EventToList + EventToList; i++)
             {
-                if (_event.Name == null) continue;
-                keyboard.AddButton(_event.Name.ToString(), "").AddLine();
+                if (i >= Event.ActualEvents.Count ) break;
+                if (Event.ActualEvents[i].Name != null)
+                    keyboard.AddButton(Event.ActualEvents[i].Name, "").AddLine();
+            }
+
+            if (person.Minor > 0)
+            {
+                keyboard
+                    .AddButton("<-", "", KeyboardButtonColor.Primary);
+                if (Event.ActualEvents.Count - person.Minor * EventToList <= EventToList)
+                    keyboard
+                        .AddLine();
+            }
+
+            if (person.Minor < 1)
+            {
+                if (Event.ActualEvents.Count - person.Minor * EventToList > EventToList)
+                    keyboard
+                        .AddButton("->", "", KeyboardButtonColor.Primary).AddLine();
             }
 
             keyboard
@@ -56,8 +76,7 @@ namespace EventsLogic
             KeyboardBuilder keyboard = new KeyboardBuilder();
 
             keyboard
-                .AddButton("Назад", "", KeyboardButtonColor.Primary)
-                .SetOneTime();
+                .AddButton("Назад", "", KeyboardButtonColor.Primary);
             return keyboard;
         }
 
@@ -66,7 +85,7 @@ namespace EventsLogic
         /// </summary>
         internal static KeyboardBuilder CreateEvents(MessageReceivedEventArgs e, Event @event)
         {
-            KeyboardBuilder keyboard = new KeyboardBuilder();
+            KeyboardBuilder keyboard = new KeyboardBuilder("type", false);
 
             if (@event.CheackReady())
                 keyboard
@@ -91,8 +110,7 @@ namespace EventsLogic
                 .AddButton("Место", "",
                 string.IsNullOrWhiteSpace(@event.Place) ? Default : Positive).AddLine()
 
-                .AddButton("Назад","Кнопка возвращает на главное меню" , Default)
-                .SetOneTime();
+                .AddButton("Назад", "Кнопка возвращает на главное меню", Default);
             return keyboard;
         }
 
@@ -101,9 +119,70 @@ namespace EventsLogic
             KeyboardBuilder keyboard = new KeyboardBuilder();
 
             keyboard
-                .AddButton("Назад", "", Default)
-                .SetOneTime();
+                .AddButton("Назад", "", Default);
             return keyboard;
+
+        }
+
+        #endregion
+
+        #region WaitingParameters
+
+        //public static void WaitingParameters_Name(Person person, MessageReceivedEventArgs e)
+        //{
+        //    string message = "Обязательное поля для заполнения";
+
+        //    SendMessage(e, message);
+        //}
+
+        //public static void WaitingParameters_Describe(Person person, MessageReceivedEventArgs e)
+        //{
+        //    string message = "Не обязательное поля для заполнения";
+
+        //    SendMessage(e, message);
+        //}
+
+        //public static void WaitingParameters_StartTime(Person person, MessageReceivedEventArgs e)
+        //{
+        //    string message =
+        //        "Обязательное поля для заполнения\n" +
+        //        "Формат записи: дд.мм.гггг чч:мм";
+
+        //    SendMessage(e, message);
+        //}
+
+        //public static void WaitingParameters_EndTime(Person person, MessageReceivedEventArgs e)
+        //{
+        //    string message =
+        //        "Обязательное поля для заполнения\n" +
+        //        "Формат записи: дд.мм.гггг чч:мм";
+
+        //    SendMessage(e, message);
+        //}
+
+        //public static void WaitingParameters_Seats(Person person, MessageReceivedEventArgs e)
+        //{
+        //    string message = "Обязательное поля для заполнения";
+
+        //    SendMessage(e, message);
+        //}
+
+        public static KeyboardBuilder WaitingParameters_Place()
+        {
+            KeyboardBuilder keyboard = (KeyboardBuilder)new KeyboardBuilder();
+
+            keyboard.AddGeo();
+
+            return keyboard;
+        }
+
+        #endregion
+
+        #region SpetionButton
+
+        private static void AddGeo(this KeyboardBuilder keyboard)
+        {
+            keyboard.AddButton("Геопозиция", "location", Default);
         }
 
         #endregion

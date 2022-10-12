@@ -64,7 +64,7 @@ namespace EventsLogic
             string message =
                 "Все активные мероприятия";
 
-            SendMessage(e, message, KeyboardConstructor.WatchEvents(e));
+            SendMessage(e, message, KeyboardConstructor.WatchEvents(person, e));
         }
 
         public static void MyEvents(Person person, MessageReceivedEventArgs e)
@@ -127,13 +127,12 @@ namespace EventsLogic
             Event @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
 
             string message =
-                "Событие зодано";
+                "Событие создано";
 
-            SendMessage(e, message, KeyboardConstructor.CreateEvents(e, @event));
+            SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
         }
 
         #endregion
-
 
         #region WaitingParameters
 
@@ -180,7 +179,7 @@ namespace EventsLogic
         {
             string message = "Не обязательное поля для заполнения";
 
-            SendMessage(e, message);
+            SendMessage(e, message, KeyboardConstructor.WaitingParameters_Place());
         }
 
         #endregion

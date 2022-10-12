@@ -20,24 +20,21 @@ namespace vkBot
             CompletEvents = 5,
         }
 
-        private enum Minor
+        private enum Create
         {
-            First = 0,
-            Second = 1,
-            Third = 2,
-            Fourth = 3,
-            Five = 4,
-            Sixth = 5,
+            Name = 1,
+            Describe = 2,
+            StartTime = 3,
+            EndTime = 4,
+            Seats = 5,
+            Place = 6,
         }
-
-
 
         internal static void FirstOccurrence(Person person, MessageReceivedEventArgs e)
         {
             MessageConstructor.FirstOccurrence(person, e);
-            UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
+            UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: 0);
         }
-
 
         internal static void MainMenu(Person person, MessageReceivedEventArgs e)
         {
@@ -46,61 +43,78 @@ namespace vkBot
                 case "Посмотреть мероприятия":
                     {
                         MessageConstructor.WatchEvents(person, e);
-                        UsersDatabase.UserSetParams(person, major: (int)Major.LookEvents, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.LookEvents, minor: 0);
+                        return;
                     }
-                    return;
                 case "Создать мероприятие":
                     {
                         if (!person.IsAdmin) return;
                         Event.CreateEvent(person.Id);
                         MessageConstructor.CreateEvent(person, e);
-                        UsersDatabase.UserSetParams(person, major: (int)Major.CreateEvent, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.CreateEvent, minor: 0);
+                        return;
                     }
-                    return;
                 case "Мои мероприятия":
                     {
                         MessageConstructor.MyEvents(person, e);
-                        UsersDatabase.UserSetParams(person, major: (int)Major.MyEvents, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.MyEvents, minor: 0);
+                        return;
                     }
-                    return;
                 case "Завершённые мероприятия":
                     {
                         MessageConstructor.CompletEvents(person, e);
-                        UsersDatabase.UserSetParams(person, major: (int)Major.CompletEvents, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.CompletEvents, minor: 0);
+                        return;
                     }
-                    return;
                 case "Информация":
                     {
                         FirstOccurrence(person, e);
+                        return;
                     }
-                    return;
                 case "Обо мне":
                     {
                         MessageConstructor.AboutMe(person, e);
-                        UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: 0);
+                        return;
                     }
-                    return;
                 default: return;
             }
         }
 
-        internal static void WatchingEvents(Person person, MessageReceivedEventArgs e)
+
+        #region Посмотреть мероприятия
+
+        internal static void LookEvents(Person person, MessageReceivedEventArgs e)
         {
             switch (e.Message.Text)
             {
+                case "->":
+                    {
+                        UsersDatabase.UserSetParams(person, major: (int)Major.LookEvents, minor: person.Minor + 1);
+                        MessageConstructor.WatchEvents(person, e);
+                        return;
+                    }
+                case "<-":
+                    {
+                        UsersDatabase.UserSetParams(person, major: (int)Major.LookEvents, minor: person.Minor - 1);
+                        MessageConstructor.WatchEvents(person, e);
+                        return;
+                    }
                 case "Назад":
                     {
-                        MessageConstructor.WatchEvents_Back(person, e);
-                        UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.LookEvents, minor: 0);
+                        return;
                     }
-                    return;
                 default:
                     {
-
+                        return;
                     }
-                    return;
             }
         }
+
+        #endregion
+
+        #region Создать мероприятие
 
         internal static void CreateEvent(Person person, MessageReceivedEventArgs e)
         {
@@ -110,102 +124,111 @@ namespace vkBot
                     {
                         var @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
                         MessageConstructor.OnCreateEvent(person, e);
-                        UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor:(int)Minor.First);
+                        @event.PersonCreated = null;
                         EventsDatabase.AddEvent(@event);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: 0);
+                        return;
                     }
-                    return;
                 case "Название":
                     {
                         MessageConstructor.WaitingParameters_Name(person, e);
-                        UsersDatabase.UserSetParams(person, minor: (int)Minor.First);
+                        UsersDatabase.UserSetParams(person, minor: (int)Create.Name);
+                        return;
                     }
-                    return;
                 case "Опиcание":
                     {
                         MessageConstructor.WaitingParameters_Describe(person, e);
-                        UsersDatabase.UserSetParams(person, minor: (int)Minor.Second);
+                        UsersDatabase.UserSetParams(person, minor: (int)Create.Describe);
+                        return;
                     }
-                    return;
                 case "Время начала":
                     {
                         MessageConstructor.WaitingParameters_StartTime(person, e);
-                        UsersDatabase.UserSetParams(person, minor: (int)Minor.Third);
+                        UsersDatabase.UserSetParams(person, minor: (int)Create.StartTime);
+                        return;
                     }
-                    return;
                 case "Время конца":
                     {
                         MessageConstructor.WaitingParameters_EndTime(person, e);
-                        UsersDatabase.UserSetParams(person, minor: (int)Minor.Fourth);
+                        UsersDatabase.UserSetParams(person, minor: (int)Create.EndTime);
+                        return;
                     }
-                    return;
                 case "Число волонтёров":
                     {
                         MessageConstructor.WaitingParameters_Seats(person, e);
-                        UsersDatabase.UserSetParams(person, minor: (int)Minor.Five);
+                        UsersDatabase.UserSetParams(person, minor: (int)Create.Seats);
+                        return;
                     }
-                    return;
                 case "Место":
                     {
                         MessageConstructor.WaitingParameters_Place(person, e);
-                        UsersDatabase.UserSetParams(person, minor: (int)Minor.Sixth);
+                        UsersDatabase.UserSetParams(person, minor: (int)Create.Place);
+                        return;
                     }
-                    return;
                 case "Назад":
                     {
                         MessageConstructor.WatchEvents_Back(person, e);
-                        UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: (int)Minor.First);
                         Event.RemoveEvent(person.Id);
+                        UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: 0);
+                        return;
                     }
-                    return;
                 default:
                     {
-                        Event @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
-
-                        switch ((Minor)person.Minor)
-                        {
-                            case Minor.First:
-                                {
-                                    @event.Name = e.Message.Text;
-                                    MessageConstructor.CreateEvent(person, e);
-                                }
-                                return;
-                            case Minor.Second:
-                                {
-                                    @event.Describe = e.Message.Text;
-                                    MessageConstructor.CreateEvent(person, e);
-                                }
-                                return;
-                            case Minor.Third:
-                                {
-                                    if (DateTime.TryParse(e.Message.Text, out DateTime dateTime))
-                                        @event.StartTime = dateTime;
-                                    MessageConstructor.CreateEvent(person, e);
-                                }
-                                return;
-                            case Minor.Fourth:
-                                {
-                                    if (DateTime.TryParse(e.Message.Text, out DateTime dateTime))
-                                        @event.EndTime = dateTime;
-                                    MessageConstructor.CreateEvent(person, e);
-                                }
-                                return;
-                            case Minor.Five:
-                                {
-                                    if (int.TryParse(e.Message.Text, out int seats))
-                                        @event.Seats = seats;
-                                    MessageConstructor.CreateEvent(person, e);
-                                }
-                                return;
-                            case Minor.Sixth:
-                                {
-                                    @event.Place = e.Message.Text;
-                                    MessageConstructor.CreateEvent(person, e);
-                                }
-                                return;
-                        }
+                        SetParamEvent(person, e);
+                        return;
                     }
-                    return;
             }
         }
+        internal static void SetParamEvent(Person person, MessageReceivedEventArgs e)
+        {
+            Event @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
+
+            switch ((Create)person.Minor)
+            {
+                case Create.Name:
+                    {
+                        @event.Name = e.Message.Text;
+                        MessageConstructor.CreateEvent(person, e);
+                        return;
+                    }
+                case Create.Describe:
+                    {
+                        @event.Describe = e.Message.Text;
+                        MessageConstructor.CreateEvent(person, e);
+                        return;
+                    }
+                case Create.StartTime:
+                    {
+                        if (DateTime.TryParse(e.Message.Text, out DateTime dateTime))
+                            @event.StartTime = dateTime;
+                        MessageConstructor.CreateEvent(person, e);
+                        return;
+                    }
+                case Create.EndTime:
+                    {
+                        if (DateTime.TryParse(e.Message.Text, out DateTime dateTime))
+                            @event.EndTime = dateTime;
+                        MessageConstructor.CreateEvent(person, e);
+                        return;
+                    }
+                case Create.Seats:
+                    {
+                        if (int.TryParse(e.Message.Text, out int seats))
+                            @event.Seats = seats;
+                        MessageConstructor.CreateEvent(person, e);
+                        return;
+                    }
+                case Create.Place:
+                    {
+                        @event.Place = e.Message.Text;
+                        MessageConstructor.CreateEvent(person, e);
+                        return;
+                    }
+            }
+        }
+
+        #endregion
+
+
     }
 }
