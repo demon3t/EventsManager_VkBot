@@ -5,6 +5,7 @@ using System.Linq;
 using VkBotFramework;
 using VkBotFramework.Models;
 using VkNet.Model.RequestParams;
+using EventsLogic.HelperClasses;
 
 namespace vkBot
 {
@@ -28,6 +29,7 @@ namespace vkBot
             Console.WriteLine($"{DateTime.Now}: Bot started");                       // оповещение запуска бота
             Person.Admins = UsersDatabase.FindUsers(UserFindBy.Admin, true);         // загрузка списка Адмистроторов и Помощников
             Event.ActualEvents = EventsDatabase.FillActualEvents();
+            Event.ActualEvents.DateTimeSort();
 
 
             vkBot.OnMessageReceived += VkBot_OnMessageReceived;

@@ -62,7 +62,7 @@ namespace EventsLogic
         public static void WatchEvents(Person person, MessageReceivedEventArgs e)
         {
             string message =
-                $"Все активые мероприятия{Environment.NewLine}" +
+                $"Активые мероприятия{Environment.NewLine}" +
                 $"{(Event.ActualEvents.Count > 5 ? $"{person.Minor + 1} страница" : "")}";
 
             SendMessage(e, message, KeyboardConstructor.WatchEvents(person, e));
