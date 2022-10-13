@@ -44,26 +44,25 @@ namespace EventsLogic
         {
             KeyboardBuilder keyboard = new KeyboardBuilder();
 
-                for (int i = person.Minor * EventToList; i < person.Minor * EventToList + EventToList; i++)
-                {
-                    if (i >= Event.ActualEvents.Count) break;
-                    if (Event.ActualEvents[i].Name != null)
-                        keyboard.AddButton(Event.ActualEvents[i].Name, "").AddLine();
-                }
+            for (int i = person.Minor * EventToList; i < person.Minor * EventToList + EventToList; i++)
+            {
+                if (i >= Event.ActualEvents.Count) break;
+                keyboard.AddButton(Event.ActualEvents[i].Name, "").AddLine();
+            }
 
-                if (person.Minor > 0)
-                {
+            if (person.Minor > 0)
+            {
+                keyboard
+                    .AddButton("<-", "", KeyboardButtonColor.Primary);
+                if (Event.ActualEvents.Count - person.Minor * EventToList <= EventToList)
                     keyboard
-                        .AddButton("<-", "", KeyboardButtonColor.Primary);
-                    if (Event.ActualEvents.Count - person.Minor * EventToList <= EventToList)
-                        keyboard
-                            .AddLine();
-                }
+                        .AddLine();
+            }
 
-                if (Event.ActualEvents.Count - person.Minor * EventToList > EventToList)
-                    keyboard
-                        .AddButton("->", "", KeyboardButtonColor.Primary).AddLine();
-            
+            if (Event.ActualEvents.Count - person.Minor * EventToList > EventToList)
+                keyboard
+                    .AddButton("->", "", KeyboardButtonColor.Primary).AddLine();
+
             keyboard
                 .AddButton("Назад", "", KeyboardButtonColor.Primary);
             return keyboard;
@@ -78,9 +77,6 @@ namespace EventsLogic
             return keyboard;
         }
 
-        /// <summary>
-        /// Клавиатура при создании мероприятия
-        /// </summary>
         internal static KeyboardBuilder CreateEvents(MessageReceivedEventArgs e, Event @event)
         {
             KeyboardBuilder keyboard = new KeyboardBuilder("type", false);

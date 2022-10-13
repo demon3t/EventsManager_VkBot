@@ -26,25 +26,24 @@ namespace vkBot
 
         private static void VkBot_OnBotStarted(object sender, EventArgs e)
         {
-            Console.WriteLine($"{DateTime.Now}: Bot started");                       // оповещение запуска бота
-            Person.Admins = UsersDatabase.FindUsers(UserFindBy.Admin, true);         // загрузка списка Адмистроторов и Помощников
-            Event.ActualEvents = EventsDatabase.FillActualEvents();
-            Event.ActualEvents.DateTimeSort();
-
+            Console.WriteLine($"{DateTime.Now}: Bot started");                   // оповещение запуска бота
+            Person.Admins = UsersDatabase.FindUsers(isAdmin: true);              // загрузка списка Адмистроторов и Помощников
+                Event.ActualEvents = EventsDatabase.FindEvents(isActual: true);
 
             vkBot.OnMessageReceived += VkBot_OnMessageReceived;
         }
 
         private static void VkBot_OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
+
             if (UsersDatabase.CheckUserToId(e.Message.PeerId.ToString()))
             {
                 RegisterUser(e);
             }
 
-            var person = UsersDatabase.FindUsers(UserFindBy.Id, e.Message.PeerId).First();
+            var person = UsersDatabase.FindUsers(id: e.Message.PeerId.ToString()).First();
 
-            Console.WriteLine($"{DateTime.Now.ToString().Replace(' ', '/')}  {person.SurName} {person.Name} {person.Id} : {e.Message.Text}");
+            Console.WriteLine($"{DateTime.Now.ToString().Replace(' ', '/')}  {person.Surname} {person.Name} {person.Id} : {e.Message.Text}");
 
             switch (person.Major)
             {

@@ -10,7 +10,7 @@ namespace EventsLogic
         public static List<Person> Admins = new List<Person>();
 
         public string Id { get; set; } = string.Empty;
-        public string? SurName { get; set; }
+        public string? Surname { get; set; }
         public string? Name { get; set; }
         public bool IsAdmin { get; set; }
         public int Major { get; set; }

@@ -15,9 +15,13 @@ namespace vkBot
             FirstOccurrence = 0,
             Normal = 1,
             LookEvents = 2,
+            RequestEvent = 6,
+
             MyEvents = 3,
             CreateEvent = 4,
             CompletEvents = 5,
+
+            
         }
 
         private enum Create
@@ -48,7 +52,7 @@ namespace vkBot
                 case "Создать мероприятие":
                     {
                         if (!person.IsAdmin) return;
-                        Event.CreateEvent(person.Id);
+                        EventsDatabase.AddEvent(person.Id);
                         MessageConstructor.CreateEvent(person, e);
                         UsersDatabase.UserSetParams(person, major: (int)Major.CreateEvent, minor: 0);
                         return;
@@ -58,7 +62,7 @@ namespace vkBot
                         MessageConstructor.MyEvents(person, e);
                         UsersDatabase.UserSetParams(person, major: (int)Major.MyEvents, minor: 0);
                         return;
-                    }
+                    }   
                 case "Завершённые мероприятия":
                     {
                         MessageConstructor.CompletEvents(person, e);
@@ -115,6 +119,8 @@ namespace vkBot
                     }
                 default:
                     {
+                        UsersDatabase.UserSetParams(person, major: (int)Major.RequestEvent);
+                        MessageConstructor.RequestEvent(person, e);
                         return;
                     }
             }
@@ -130,10 +136,10 @@ namespace vkBot
             {
                 case "Создать":
                     {
-                        var @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
+                        var @event = Event.ActualEvents.Find(x => x.Author == person.Id);
                         MessageConstructor.OnCreateEvent(person, e);
-                        @event.PersonCreated = null;
                         EventsDatabase.AddEvent(@event);
+                        @event.Name = $"{@event.Name}|{EventsDatabase.SetLastIndex()}";
                         UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: 0);
                         return;
                     }
@@ -176,7 +182,6 @@ namespace vkBot
                 case "Назад":
                     {
                         MessageConstructor.Back(person, e);
-                        Event.RemoveEvent(person.Id);
                         UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: 0);
                         return;
                     }
@@ -189,7 +194,7 @@ namespace vkBot
         }
         internal static void SetParamEvent(Person person, MessageReceivedEventArgs e)
         {
-            Event @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
+            Event @event = Event.ActualEvents.Find(x => x.Author == person.Id);
 
             switch ((Create)person.Minor)
             {

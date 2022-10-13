@@ -7,24 +7,31 @@ namespace EventsLogic.HelperClasses
 {
     public static class ListExpansion
     {
-        public static List<T> DateTimeSort<T>(this List<T> list) where T : IListDataTime
+        public static List<T> SortByDateTime<T>(this List<T> obj)
+            where T : IListDataTime
         {
-            for (int i = 0; i < list.Count; i++)
-                for (int j = 0; j < list.Count - i-1; j++)
-                    if (list[j].SortDateTime() > list[j + 1].SortDateTime())
+            for (int i = 0; i < obj.Count; i++)
+                for (int j = 0; j < obj.Count - i - 1; j++)
+                    if (obj[j].SortDateTime() > obj[j + 1].SortDateTime())
                     {
-                        var temp = list[j];
-                        list[j] = list[j + 1];
-                        list[j + 1] = temp;
+                        var temp = obj[j];
+                        obj[j] = obj[j + 1];
+                        obj[j + 1] = temp;
                     }
 
-            return list;
+            return obj;
         }
-
-        public static void DateTimeAdd()
+        public static List<T> AddByDateTime<T>(this List<T> obj, T item)
+            where T : IListDataTime
         {
-
-
+            for (int i = 0; i < obj.Count; i++)
+                if (item.SortDateTime() < obj[i].SortDateTime())
+                {
+                    obj.Insert(i, item);
+                    return obj;
+                }
+            obj.Add(item);
+            return obj;
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using EventsLogic.HelperClasses;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,6 @@ using System.Text;
 
 namespace EventsLogic.DatabaseRequest
 {
-    public enum UserFindBy { Id, Admin, Name, Surname, NameAndSurname }
     public class UsersDatabase
     {
         private static readonly string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Nipa\\source\\repos\\vkBot\\EventsLogic\\Database.mdf;Integrated Security = True";
@@ -49,7 +49,7 @@ namespace EventsLogic.DatabaseRequest
         /// <param name="admin"> Администрирование,изменияемый параметр. </param>
         /// <param name="major"> Мажор,изменияемый параметр. </param>
         /// <param name="minor"> Минор,изменияемый параметр. </param>
-        public static void UserSetParams(Person person, string? name = null, string? surname = null, bool? admin = null, int? major = null, int? minor = null)
+        public static void UserSetParams(string id, string? name = null, string? surname = null, bool? admin = null, int? major = null, int? minor = null)
         {
             string sqlExpression = "UserSetParams";
 
@@ -60,12 +60,12 @@ namespace EventsLogic.DatabaseRequest
                 {
                     CommandType = System.Data.CommandType.StoredProcedure
                 };
-                command.Parameters.Add(ParameterRegistrer(person.Id, "@Id"));
-                command.Parameters.Add(ParameterRegistrer(name ?? person.Name, "@Name"));
-                command.Parameters.Add(ParameterRegistrer(surname ?? person.SurName, "@Surname"));
-                command.Parameters.Add(ParameterRegistrer(admin ?? person.IsAdmin, "@Admin"));
-                command.Parameters.Add(ParameterRegistrer(major ?? person.Major, "@Major"));
-                command.Parameters.Add(ParameterRegistrer(minor ?? person.Minor, "@Minor"));
+                command.Parameters.Add(ParameterRegistrer(id, "@Id"));
+                command.Parameters.Add(ParameterRegistrer(name, "@Name"));
+                command.Parameters.Add(ParameterRegistrer(surname, "@Surname"));
+                command.Parameters.Add(ParameterRegistrer(admin, "@Admin"));
+                command.Parameters.Add(ParameterRegistrer(major, "@Major"));
+                command.Parameters.Add(ParameterRegistrer(minor, "@Minor"));
                 command.ExecuteScalar();
             }
         }
@@ -77,7 +77,7 @@ namespace EventsLogic.DatabaseRequest
         /// <returns> True - пользователь есть в базе данных, false - нету. </returns>
         public static bool CheckUserToId(string id)
         {
-            return FindUsers(UserFindBy.Id, id).Count == 0;
+            return FindUsers(id: id).Count == 0;
         }
 
         /// <summary>
@@ -86,10 +86,11 @@ namespace EventsLogic.DatabaseRequest
         /// <param name="findBy"> Параметр. </param>
         /// <param name="desired"> Значение параметра. </param>
         /// <returns> Список всех соответствующих пользователей </returns>
-        public static List<Person> FindUsers(UserFindBy findBy, object desired)
+        public static List<Person> FindUsers(string? id = null, string? name = null, string? surname = null,
+            bool? isAdmin = null, int? major = null, int? minor = null)
         {
-            string sqlExpression = $"UserFindBy{findBy}";
-            List<Person> result = new List<Person>();
+            var result = new List<Person>();
+            string sqlExpression = "UserFindByParams";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -98,30 +99,14 @@ namespace EventsLogic.DatabaseRequest
                 {
                     CommandType = System.Data.CommandType.StoredProcedure
                 };
-                switch (findBy)
-                {
-                    case UserFindBy.Id:
-                        command.Parameters.Add(ParameterRegistrer(desired, "@Id"));
-                        break;
-                    case UserFindBy.Admin:
-                        command.Parameters.Add(ParameterRegistrer(desired, "@Admin"));
-                        break;
-                    case UserFindBy.Name:
-                        command.Parameters.Add(ParameterRegistrer(desired, "@Name"));
-                        break;
-                    case UserFindBy.Surname:
-                        command.Parameters.Add(ParameterRegistrer(desired, "@Surname"));
-                        break;
-                    case UserFindBy.NameAndSurname:
-                        {
-                            int scSymbol = ((string)desired).IndexOf('|');
-                            command.Parameters.Add(ParameterRegistrer(((string)desired)
-                                .Remove(0, scSymbol), "@Param1"));
-                            command.Parameters.Add(ParameterRegistrer(((string)desired)
-                                .Remove(scSymbol + 1, ((string)desired).Length - scSymbol), "@Param2"));
-                        }
-                        break;
-                }
+
+                command.Parameters.Add(ParameterRegistrer(id, "@Id"));
+                command.Parameters.Add(ParameterRegistrer(name, "@Name"));
+                command.Parameters.Add(ParameterRegistrer(surname, "@Surname"));
+                command.Parameters.Add(ParameterRegistrer(isAdmin, "@Admin"));
+                command.Parameters.Add(ParameterRegistrer(major, "@Major"));
+                command.Parameters.Add(ParameterRegistrer(minor, "@Minor"));
+
                 SqlDataReader reader = command.ExecuteReader();
 
                 for (int i = 0; i < int.MaxValue; i++)
@@ -130,7 +115,7 @@ namespace EventsLogic.DatabaseRequest
                         {
                             Id = (string)reader["Id"],
                             Name = (string)reader["Name"],
-                            SurName = (string)reader["Surname"],
+                            Surname = (string)reader["Surname"],
                             IsAdmin = (bool)reader["Admin"],
                             Major = (int)reader["Major"],
                             Minor = (int)reader["Minor"]
@@ -147,11 +132,11 @@ namespace EventsLogic.DatabaseRequest
         /// <returns> Строковое представление информации о пользователе. </returns>
         public static string AboutMe(string id)
         {
-            Person user = FindUsers(UserFindBy.Id, id).First();
+            Person user = FindUsers(id: id).First();
             return
                 $"Id: {user.Id}\n" +
                 $"Имя: {user.Name}\n" +
-                $"Фамилия: {user.SurName}\n" +
+                $"Фамилия: {user.Surname}\n" +
                 $"Администратор: {user.IsAdmin}\n";
         }
 

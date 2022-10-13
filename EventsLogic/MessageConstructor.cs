@@ -23,7 +23,6 @@ namespace EventsLogic
                 Keyboard = keyboard.Build(),
             });
         }
-
         private static void SendMessage(MessageReceivedEventArgs e, string message)
         {
             if (vkBot == null) return;
@@ -36,13 +35,30 @@ namespace EventsLogic
             });
         }
 
+        #region RequestEvent
+
+        public static void RequestEvent(Person person, MessageReceivedEventArgs e)
+        {
+
+            //string message =
+
+
+            //SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
+        }
+
+        #endregion
+
+
         #region FirstOccurrence
 
         public static void FirstOccurrence(Person person, MessageReceivedEventArgs e)
         {
             string message =
-                $"Привет {person.Name}. Данный бот может оповещать и записывать на доступные мероприятия.{Environment.NewLine}" +
-                $"А так же напоминать о мероприятиях на которые Вы записались.";
+                $"Привет {person.Name}. Данный бот может:{Environment.NewLine}" +
+                $"➤  Записывать на доступные мероприятия;{Environment.NewLine}" +
+                $"➤  Заранее оповещать о начале мероприятий;{Environment.NewLine}" +
+                $"➤  Показать посещённые мероприяти;{Environment.NewLine}" +
+                $"➤  Показывать статистику.";
 
             SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
         }
@@ -105,7 +121,7 @@ namespace EventsLogic
         /// </summary>
         public static void CreateEvent(Person person, MessageReceivedEventArgs e)
         {
-            Event @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
+            Event @event = Event.ActualEvents.Find(x => x.Author == person.Id);
 
             string message =
                 $"Необходимо заполнить всю обязательную информация (кнопки красного цвета). {Environment.NewLine}" +
@@ -125,7 +141,7 @@ namespace EventsLogic
         /// </summary>
         public static void OnCreateEvent(Person person, MessageReceivedEventArgs e)
         {
-            Event @event = Event.ActualEvents.Find(x => x.PersonCreated == person.Id);
+            Event @event = Event.ActualEvents.Find(x => x.Author == person.Id);
 
             string message =
                 "Событие создано";
