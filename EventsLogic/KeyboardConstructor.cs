@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EventsLogic.DatabaseRequest;
+using System;
 using System.Data;
 using VkBotFramework.Models;
 using VkNet.Enums.SafetyEnums;
@@ -43,26 +44,26 @@ namespace EventsLogic
         {
             KeyboardBuilder keyboard = new KeyboardBuilder();
 
-            for (int i = person.Minor * EventToList; i < person.Minor * EventToList + EventToList; i++)
-            {
-                if (i >= Event.ActualEvents.Count) break;
-                if (Event.ActualEvents[i].Name != null)
-                    keyboard.AddButton(Event.ActualEvents[i].Name, "").AddLine();
-            }
+                for (int i = person.Minor * EventToList; i < person.Minor * EventToList + EventToList; i++)
+                {
+                    if (i >= Event.ActualEvents.Count) break;
+                    if (Event.ActualEvents[i].Name != null)
+                        keyboard.AddButton(Event.ActualEvents[i].Name, "").AddLine();
+                }
 
-            if (person.Minor > 0)
-            {
-                keyboard
-                    .AddButton("<-", "", KeyboardButtonColor.Primary);
-                if (Event.ActualEvents.Count - person.Minor * EventToList <= EventToList)
+                if (person.Minor > 0)
+                {
                     keyboard
-                        .AddLine();
-            }
+                        .AddButton("<-", "", KeyboardButtonColor.Primary);
+                    if (Event.ActualEvents.Count - person.Minor * EventToList <= EventToList)
+                        keyboard
+                            .AddLine();
+                }
 
-            if (Event.ActualEvents.Count - person.Minor * EventToList > EventToList)
-                keyboard
-                    .AddButton("->", "", KeyboardButtonColor.Primary).AddLine();
-
+                if (Event.ActualEvents.Count - person.Minor * EventToList > EventToList)
+                    keyboard
+                        .AddButton("->", "", KeyboardButtonColor.Primary).AddLine();
+            
             keyboard
                 .AddButton("Назад", "", KeyboardButtonColor.Primary);
             return keyboard;

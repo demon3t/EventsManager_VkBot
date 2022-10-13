@@ -42,7 +42,6 @@ namespace vkBot
             {
                 case "Посмотреть мероприятия":
                     {
-                        UsersDatabase.UserSetParams(person, major: (int)Major.LookEvents, minor: 0);
                         LookEvents(person, e);
                         return;
                     }
@@ -97,18 +96,21 @@ namespace vkBot
                 case "->":
                     {
                         UsersDatabase.UserSetParams(person, major: (int)Major.LookEvents, minor: person.Minor + 1);
+                        person.Minor += 1;
                         MessageConstructor.WatchEvents(person, e);
                         return;
                     }
                 case "<-":
                     {
                         UsersDatabase.UserSetParams(person, major: (int)Major.LookEvents, minor: person.Minor - 1);
+                        person.Minor -= 1;
                         MessageConstructor.WatchEvents(person, e);
                         return;
                     }
                 case "Назад":
                     {
                         UsersDatabase.UserSetParams(person, major: (int)Major.LookEvents, minor: 0);
+                        MessageConstructor.Back(person, e);
                         return;
                     }
                 default:
@@ -173,7 +175,7 @@ namespace vkBot
                     }
                 case "Назад":
                     {
-                        MessageConstructor.WatchEvents_Back(person, e);
+                        MessageConstructor.Back(person, e);
                         Event.RemoveEvent(person.Id);
                         UsersDatabase.UserSetParams(person, major: (int)Major.Normal, minor: 0);
                         return;

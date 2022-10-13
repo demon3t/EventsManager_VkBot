@@ -50,27 +50,15 @@ namespace EventsLogic
             return true;
         }
 
-         
 
 
-        public static void CreateEvent(string personCreated)
-        {
-            ActualEvents.Add(new Event(personCreated));
-        }
 
-        public static void RemoveEvent(string personCreated)
-        {
-            ActualEvents.Remove(ActualEvents.Find(x => x.PersonCreated == personCreated));
-        }
+        public static void CreateEvent(string personCreated) => ActualEvents.Add(new Event(personCreated));
+        public static void RemoveEvent(string personCreated) => ActualEvents.Remove(ActualEvents.Find(x => x.PersonCreated == personCreated));
 
-        public static bool operator ==(Event a, Event b)
-        {
-            return a.Id == b.Id;
-        }
-        public static bool operator !=(Event a, Event b)
-        {
-            return a.Id != b.Id;
-        }
+
+        public static bool operator ==(Event a, Event b) => a.Id == b.Id;
+        public static bool operator !=(Event a, Event b) => a.Id != b.Id;
         public override bool Equals(object obj)
         {
             if (obj is Event) return this.Id == ((Event)obj).Id;

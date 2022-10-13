@@ -27,7 +27,8 @@ namespace vkBot
         {
             Console.WriteLine($"{DateTime.Now}: Bot started");                       // оповещение запуска бота
             Person.Admins = UsersDatabase.FindUsers(UserFindBy.Admin, true);         // загрузка списка Адмистроторов и Помощников
-            Event.ActualEvents = EventsDatabase.FillActualEvents();                  // загрузка списка актуальных мероприятий
+            Event.ActualEvents = EventsDatabase.FillActualEvents();
+
 
             vkBot.OnMessageReceived += VkBot_OnMessageReceived;
         }
