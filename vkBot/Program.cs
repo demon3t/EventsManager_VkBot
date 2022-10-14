@@ -67,7 +67,7 @@ namespace vkBot
 
                     return;
                 case 6:
-                    StatusLogic.LookEvents(person, e); // ready
+                    StatusLogic.LookEvent(person, e); // ready
                     return;
                 default: return;
             }

@@ -128,7 +128,7 @@ namespace vkBot
                     }
                 default:
                     {
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.RequestEvent, minor: (int)Create.Describe);
+                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.RequestEvent);
                         LookEvent(person, e);
                         return;
                     }
@@ -145,8 +145,8 @@ namespace vkBot
             {
                 case "Назад":
                     {
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents, minor: (int)Create.Describe);
-                        LookEvents(person, e);
+                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents);
+                        MessageConstructor.WatchEvents(person, e);
                         return;
                     }
                 case "Удалить":
