@@ -18,7 +18,7 @@ namespace EventsLogic.DatabaseRequest
         /// <param name="name"> Имя пользователя. </param>
         /// <param name="surname"> Фамилия пользователя. </param>
         /// <param name="admin"> Является ли пользователь админом (если true ,то mark = true; false аналогично). </param>
-        public static void AddUser(string id, string? name, string? surname, bool admin)
+        public static void AddUser(string id, string? name, string? surname, bool? admin)
         {
             string sqlExpression = "UserAdd";
 
@@ -31,9 +31,9 @@ namespace EventsLogic.DatabaseRequest
                 };
 
                 command.Parameters.Add(ParameterRegistrer(id, "@Id"));
-                command.Parameters.Add(ParameterRegistrer(name, "@Name"));
-                command.Parameters.Add(ParameterRegistrer(surname, "@Surname"));
-                command.Parameters.Add(ParameterRegistrer(admin, "@Admin"));
+                if (name != null) command.Parameters.Add(ParameterRegistrer(name, "@Name"));
+                if (surname != null) command.Parameters.Add(ParameterRegistrer(surname, "@Surname"));
+                if (admin != null) command.Parameters.Add(ParameterRegistrer(admin, "@Admin"));
                 command.Parameters.Add(ParameterRegistrer(0, "@Major"));
                 command.Parameters.Add(ParameterRegistrer(0, "@Minor"));
                 command.ExecuteScalar();
@@ -61,11 +61,11 @@ namespace EventsLogic.DatabaseRequest
                     CommandType = System.Data.CommandType.StoredProcedure
                 };
                 command.Parameters.Add(ParameterRegistrer(id, "@Id"));
-                command.Parameters.Add(ParameterRegistrer(name, "@Name"));
-                command.Parameters.Add(ParameterRegistrer(surname, "@Surname"));
-                command.Parameters.Add(ParameterRegistrer(admin, "@Admin"));
-                command.Parameters.Add(ParameterRegistrer(major, "@Major"));
-                command.Parameters.Add(ParameterRegistrer(minor, "@Minor"));
+                if (name != null) command.Parameters.Add(ParameterRegistrer(name, "@Name"));
+                if (surname != null) command.Parameters.Add(ParameterRegistrer(surname, "@Surname"));
+                if (admin != null) command.Parameters.Add(ParameterRegistrer(admin, "@Admin"));
+                if (major != null) command.Parameters.Add(ParameterRegistrer(major, "@Major"));
+                if (minor != null) command.Parameters.Add(ParameterRegistrer(minor, "@Minor"));
                 command.ExecuteScalar();
             }
         }
@@ -100,12 +100,12 @@ namespace EventsLogic.DatabaseRequest
                     CommandType = System.Data.CommandType.StoredProcedure
                 };
 
-                command.Parameters.Add(ParameterRegistrer(id, "@Id"));
-                command.Parameters.Add(ParameterRegistrer(name, "@Name"));
-                command.Parameters.Add(ParameterRegistrer(surname, "@Surname"));
-                command.Parameters.Add(ParameterRegistrer(isAdmin, "@Admin"));
-                command.Parameters.Add(ParameterRegistrer(major, "@Major"));
-                command.Parameters.Add(ParameterRegistrer(minor, "@Minor"));
+                if (id != null) command.Parameters.Add(ParameterRegistrer(id, "@Id"));
+                if (name != null) command.Parameters.Add(ParameterRegistrer(name, "@Name"));
+                if (surname != null) command.Parameters.Add(ParameterRegistrer(surname, "@Surname"));
+                if (isAdmin != null) command.Parameters.Add(ParameterRegistrer(isAdmin, "@Admin"));
+                if (major != null) command.Parameters.Add(ParameterRegistrer(major, "@Major"));
+                if (minor != null) command.Parameters.Add(ParameterRegistrer(minor, "@Minor"));
 
                 SqlDataReader reader = command.ExecuteReader();
 

@@ -139,7 +139,9 @@ namespace vkBot
         {
             var @event = Event.GetEventFromActual(e.Message.Text);
             if (@event == null)
-                MessageConstructor.WatchEventError(person, e);
+                @event = Event.ActualEvents[person.Minor];
+            else
+                UsersDatabase.UserSetParams(person.Id, minor: Event.ActualEvents.IndexOf(@event));
 
             switch (e.Message.Text)
             {
@@ -153,13 +155,14 @@ namespace vkBot
                     {
                         EventsDatabase.EventSetParams(id: @event.Id, isActual: false);
                         Event.ActualEvents.Remove(@event);
-                        MessageConstructor.WatchEvent(@event, person, e);
+                        UsersDatabase.UserSetParams(person.Id, minor: 0);
+                        MessageConstructor.WatchEvents(person, e);
                         return;
                     }
                 case "Редактировать": // работает как назад
                     {
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents, minor: (int)Create.Describe);
-                        LookEvents(person, e);
+                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents);
+                        MessageConstructor.WatchEvents(person, e);
                         return;
                     }
                 default:
