@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static Azure.Core.HttpHeader;
 
 namespace EventsLogic.DatabaseRequest
 {
@@ -57,7 +58,7 @@ namespace EventsLogic.DatabaseRequest
             }
         }
 
-        public static List<Event> FindEvents(int? id = null, bool? isActual = null, string? name = null, string? place = null, int? seats = null, 
+        public static List<Event> FindEvents(int? id = null, bool? isActual = null, string? name = null, string? place = null, int? seats = null,
             string? describe = null, DateTime? startTime = null, DateTime? endTime = null, string? author = null, DateTime? createTime = null)
         {
             var result = new List<Event>();
@@ -71,16 +72,16 @@ namespace EventsLogic.DatabaseRequest
                     CommandType = System.Data.CommandType.StoredProcedure
                 };
 
-                command.Parameters.Add(ParameterRegistrer(id, "@Id"));
-                command.Parameters.Add(ParameterRegistrer(isActual, "@Actual"));
-                command.Parameters.Add(ParameterRegistrer(name, "@Name"));
-                command.Parameters.Add(ParameterRegistrer(place, "@Place"));
-                command.Parameters.Add(ParameterRegistrer(seats, "@Seats"));
-                command.Parameters.Add(ParameterRegistrer(describe, "@Describe"));
-                command.Parameters.Add(ParameterRegistrer(startTime, "@StartTime"));
-                command.Parameters.Add(ParameterRegistrer(endTime, "@EndTime"));
-                command.Parameters.Add(ParameterRegistrer(author, "@Author"));
-                command.Parameters.Add(ParameterRegistrer(createTime, "@CreateTime"));
+                if (id != null) command.Parameters.Add(ParameterRegistrer(id, "@Id"));
+                if (isActual != null) command.Parameters.Add(ParameterRegistrer(isActual, "@Actual"));
+                if (name != null) command.Parameters.Add(ParameterRegistrer(name, "@Name"));
+                if (place != null) command.Parameters.Add(ParameterRegistrer(place, "@Place"));
+                if (seats != null) command.Parameters.Add(ParameterRegistrer(seats, "@Seats"));
+                if (describe != null) command.Parameters.Add(ParameterRegistrer(describe, "@Describe"));
+                if (startTime != null) command.Parameters.Add(ParameterRegistrer(startTime, "@StartTime"));
+                if (endTime != null) command.Parameters.Add(ParameterRegistrer(endTime, "@EndTime"));
+                if (author != null) command.Parameters.Add(ParameterRegistrer(author, "@Author"));
+                if (createTime != null) command.Parameters.Add(ParameterRegistrer(createTime, "@CreateTime"));
 
                 SqlDataReader reader = command.ExecuteReader();
 
@@ -102,6 +103,30 @@ namespace EventsLogic.DatabaseRequest
                     else break;
             }
             return result;
+        }
+
+        public static void EventSetParams(int? id = null, bool? isActual = null, string? name = null, string? place = null, int? seats = null,
+            string? describe = null, DateTime? startTime = null, DateTime? endTime = null, string? author = null, DateTime? createTime = null)
+        {
+            string sqlExpression = "EventSetParams";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                var command = new SqlCommand(sqlExpression, connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                };
+                if (id != null) command.Parameters.Add(ParameterRegistrer(id, "@Id"));
+                if (isActual != null) command.Parameters.Add(ParameterRegistrer(isActual, "@Actual"));
+                if (name != null) command.Parameters.Add(ParameterRegistrer(name, "@Name"));
+                if (place != null) command.Parameters.Add(ParameterRegistrer(place, "@Place"));
+                if (seats != null) command.Parameters.Add(ParameterRegistrer(seats, "@Seats"));
+                if (describe != null) command.Parameters.Add(ParameterRegistrer(describe, "@Describe"));
+                if (startTime != null) command.Parameters.Add(ParameterRegistrer(startTime, "@StartTime"));
+                if (endTime != null) command.Parameters.Add(ParameterRegistrer(endTime, "@EndTime"));
+                command.ExecuteScalar();
+            }
         }
 
         public static int SetLastIndex()

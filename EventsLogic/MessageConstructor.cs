@@ -1,5 +1,8 @@
 ﻿using EventsLogic.DatabaseRequest;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using VkBotFramework;
 using VkBotFramework.Models;
 using VkNet.Model.Keyboard;
@@ -84,6 +87,25 @@ namespace EventsLogic
             SendMessage(e, message, KeyboardConstructor.WatchEvents(person, e));
         }
 
+        #region WatchEvent
+        public static void WatchEventError(Person person, MessageReceivedEventArgs e)
+        {
+            string message =
+                    "Что-то пошло не так";
+
+            SendMessage(e, message, KeyboardConstructor.WatchEvents(person, e));
+        }
+
+        public static void WatchEvent(Event @event, Person person, MessageReceivedEventArgs e)
+        {
+            string message =
+                @event.ToString();
+
+            SendMessage(e, message, KeyboardConstructor.OnEvent(@event, person, e));
+        }
+
+        #endregion
+
         public static void MyEvents(Person person, MessageReceivedEventArgs e)
         {
             string message =
@@ -121,16 +143,10 @@ namespace EventsLogic
         /// </summary>
         public static void CreateEvent(Person person, MessageReceivedEventArgs e)
         {
-            Event @event = Event.ActualEvents.Find(x => x.Author == person.Id);
+            Event @event = EventsDatabase.FindEvents(id: Event.OnCreatedEvents.GetValueOrDefault(person.Id)).First();
 
             string message =
-                $"Необходимо заполнить всю обязательную информация (кнопки красного цвета). {Environment.NewLine}" +
-                $"Предосмотр: {Environment.NewLine}" +
-                $"{@event.Name ?? "Како-то название"} {Environment.NewLine}" +
-                $"C {@event.StartTime} {Environment.NewLine}" +
-                $"до {@event.EndTime} {Environment.NewLine}" +
-                $"нужны {@event.Seats} волонтёра(ов){Environment.NewLine}" +
-                $"Место проветения: {@event.Place ?? "какое-то место"} {Environment.NewLine}";
+                @event.ToString();
 
             SendMessage(e, message, KeyboardConstructor.CreateEvents(e, @event));
         }
@@ -204,6 +220,12 @@ namespace EventsLogic
         }
 
         #endregion
+
+        public static void Error(Person person, MessageReceivedEventArgs e)
+        {
+            string message = "Error massage";
+            SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
+        }
     }
 }
 

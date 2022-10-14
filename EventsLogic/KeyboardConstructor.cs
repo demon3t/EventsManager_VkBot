@@ -47,7 +47,7 @@ namespace EventsLogic
             for (int i = person.Minor * EventToList; i < person.Minor * EventToList + EventToList; i++)
             {
                 if (i >= Event.ActualEvents.Count) break;
-                keyboard.AddButton(Event.ActualEvents[i].Name, "").AddLine();
+                keyboard.AddButton((i + 1).ToString(), "").AddLine();
             }
 
             if (person.Minor > 0)
@@ -65,6 +65,27 @@ namespace EventsLogic
 
             keyboard
                 .AddButton("Назад", "", KeyboardButtonColor.Primary);
+            return keyboard;
+        }
+
+        internal static KeyboardBuilder OnEvent(Event @event, Person person, MessageReceivedEventArgs e)
+        {
+            KeyboardBuilder keyboard = new KeyboardBuilder();
+
+
+            if (true)
+                keyboard.AddButton("Я пойду", "", Positive).AddLine();
+            else
+                if (DateTime.Now.AddHours(1) < @event.StartTime)
+                keyboard.AddButton("Я не пойду", "", Negative).AddLine();
+
+            if (person.IsAdmin)
+                keyboard
+                    .AddButton("Удалить", "", Negative).AddLine()
+                    .AddButton("Редактироварь", "", Primary).AddLine();
+
+            keyboard
+                    .AddButton("Назад", "", KeyboardButtonColor.Primary);
             return keyboard;
         }
 
