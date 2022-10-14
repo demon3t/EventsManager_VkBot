@@ -1,4 +1,5 @@
-﻿using EventsLogic.HelperClasses;
+﻿using EventsLogic.Basic;
+using EventsLogic.HelperClasses;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace EventsLogic.DatabaseRequest
 {
-    public class UsersDatabase
+    public class ClientDatabase
     {
         private static readonly string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Nipa\\source\\repos\\vkBot\\EventsLogic\\Database.mdf;Integrated Security = True";
 
@@ -86,10 +87,10 @@ namespace EventsLogic.DatabaseRequest
         /// <param name="findBy"> Параметр. </param>
         /// <param name="desired"> Значение параметра. </param>
         /// <returns> Список всех соответствующих пользователей </returns>
-        public static List<Person> FindUsers(string? id = null, string? name = null, string? surname = null,
+        public static List<Client> FindUsers(string? id = null, string? name = null, string? surname = null,
             bool? isAdmin = null, int? major = null, int? minor = null)
         {
-            var result = new List<Person>();
+            var result = new List<Client>();
             string sqlExpression = "UserFindByParams";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -111,9 +112,8 @@ namespace EventsLogic.DatabaseRequest
 
                 for (int i = 0; i < int.MaxValue; i++)
                     if (reader.Read())
-                        result.Add(new Person()
+                        result.Add(new Client((string)reader["Id"])
                         {
-                            Id = (string)reader["Id"],
                             Name = (string)reader["Name"],
                             Surname = (string)reader["Surname"],
                             IsAdmin = (bool)reader["Admin"],
@@ -132,7 +132,7 @@ namespace EventsLogic.DatabaseRequest
         /// <returns> Строковое представление информации о пользователе. </returns>
         public static string AboutMe(string id)
         {
-            Person user = FindUsers(id: id).First();
+            Client user = FindUsers(id: id).First();
             return
                 $"Id: {user.Id}\n" +
                 $"Имя: {user.Name}\n" +

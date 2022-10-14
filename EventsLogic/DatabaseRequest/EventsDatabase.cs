@@ -1,10 +1,8 @@
-﻿using EventsLogic.HelperClasses;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using static Azure.Core.HttpHeader;
+using Microsoft.Data.SqlClient;
+using EventsLogic.Basic;
+using EventsLogic.HelperClasses;
 
 namespace EventsLogic.DatabaseRequest
 {
@@ -62,7 +60,7 @@ namespace EventsLogic.DatabaseRequest
 
                 for (int i = 0; i < int.MaxValue; i++)
                     if (reader.Read())
-                        result.AddByDateTime(new Event()
+                        result.AddByDateTime(new Event((string)reader["Author"])
                         {
                             Id = (int)reader["Id"],
                             IsActual = (bool)reader["Actual"],
@@ -72,7 +70,6 @@ namespace EventsLogic.DatabaseRequest
                             Describe = (string)reader["Describe"],
                             StartTime = (DateTime)reader["StartTime"],
                             EndTime = (DateTime)reader["EndTime"],
-                            Author = (string)reader["Author"],
                             CreateTime = (DateTime)reader["CreateTime"]
                         });
                     else break;

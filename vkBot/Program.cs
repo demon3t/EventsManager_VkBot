@@ -6,6 +6,9 @@ using VkBotFramework;
 using VkBotFramework.Models;
 using VkNet.Model.RequestParams;
 using EventsLogic.HelperClasses;
+using EventsLogic.Basic;
+using vkBot.General;
+using vkBot.Logistics;
 
 namespace vkBot
 {
@@ -16,9 +19,25 @@ namespace vkBot
         /// </summary>
         private static VkBot vkBot = new VkBot(config.Token, config.URL);
 
+        public enum Major
+        {
+            FirstOccurrence = 0,
+            Normal = 1,
+
+            LookEvents = 2,
+            RequestEvent = 6,
+
+            MyEvents = 3,
+
+            CreateEvent = 4,
+            CompletEvents = 5,
+        }
+
+
         static void Main(string[] args)
         {
             MessageConstructor.vkBot = vkBot;
+            MessageGeneral.vkBot = vkBot;
             vkBot.OnBotStarted += VkBot_OnBotStarted;
 
             vkBot.Start();
@@ -28,7 +47,7 @@ namespace vkBot
         {
             Console.WriteLine($"{DateTime.Now}: Bot started");                   // оповещение запуска бота
 
-            Person.Admins = UsersDatabase.FindUsers(isAdmin: true);              // загрузка списка Адмистроторов и Помощников
+            Client.Admins = ClientDatabase.FindUsers(isAdmin: true);              // загрузка списка Адмистроторов и Помощников
             Event.ActualEvents = EventsDatabase.FindEvents(isActual: true);
 
             vkBot.OnMessageReceived += VkBot_OnMessageReceived;
@@ -37,19 +56,19 @@ namespace vkBot
         private static void VkBot_OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
 
-            if (UsersDatabase.CheckUserToId(e.Message.PeerId.ToString()))
+            if (ClientDatabase.CheckUserToId(e.Message.PeerId.ToString()))
             {
                 RegisterUser(e);
             }
 
-            var person = UsersDatabase.FindUsers(id: e.Message.PeerId.ToString()).First();
+            var person = ClientDatabase.FindUsers(id: e.Message.PeerId.ToString()).First();
 
             Console.WriteLine($"{DateTime.Now.ToString().Replace(' ', '/')}  {person.Surname} {person.Name} {person.Id} : {e.Message.Text}");
 
             switch (person.Major)
             {
                 case 0:
-                    StatusLogic.FirstOccurrence(person, e); // ready
+                    Entry.Go(person, e); // ready
                     return;
                 case 1:
                     StatusLogic.MainMenu(person, e); // ready
@@ -82,7 +101,7 @@ namespace vkBot
                 GroupId = (ulong?)e.Message.PeerId,
                 Extended = true,
             };
-            UsersDatabase.AddUser(e.Message.PeerId.ToString(),
+            ClientDatabase.AddUser(e.Message.PeerId.ToString(),
                 vkBot.Api.Messages.GetConversations(param).Profiles[0].FirstName,
                 vkBot.Api.Messages.GetConversations(param).Profiles[0].LastName, false);
         }

@@ -7,6 +7,8 @@ using System.Text;
 using VkBotFramework.Models;
 using EventsLogic.HelperClasses;
 using System.Linq;
+using EventsLogic.Basic;
+using vkBot.Logistics;
 
 namespace vkBot
 {
@@ -36,13 +38,8 @@ namespace vkBot
             Place = 6,
         }
 
-        internal static void FirstOccurrence(Person person, MessageReceivedEventArgs e)
-        {
-            MessageConstructor.FirstOccurrence(person, e);
-            UsersDatabase.UserSetParams(person.Id, major: (int)Major.Normal, minor: 0);
-        }
 
-        internal static void MainMenu(Person person, MessageReceivedEventArgs e)
+        internal static void MainMenu(Client person, MessageReceivedEventArgs e)
         {
             switch (e.Message.Text)
             {
@@ -63,30 +60,30 @@ namespace vkBot
                         Event.OnCreatedEvents.Add(person.Id, EventsDatabase.SetLastIndex());
 
                         MessageConstructor.CreateEvent(person, e);
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.CreateEvent, minor: 0);
+                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.CreateEvent, minor: 0);
                         return;
                     }
                 case "Мои мероприятия":
                     {
                         MessageConstructor.MyEvents(person, e);
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.MyEvents, minor: 0);
+                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.MyEvents, minor: 0);
                         return;
                     }
                 case "Завершённые мероприятия":
                     {
                         MessageConstructor.CompletEvents(person, e);
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.CompletEvents, minor: 0);
+                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.CompletEvents, minor: 0);
                         return;
                     }
                 case "Информация":
                     {
-                        FirstOccurrence(person, e);
+                        Entry.Go(person, e);
                         return;
                     }
                 case "Обо мне":
                     {
                         MessageConstructor.AboutMe(person, e);
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.Normal, minor: 0);
+                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.Normal, minor: 0);
                         return;
                     }
                 default: return;
@@ -96,58 +93,58 @@ namespace vkBot
 
         #region Посмотреть мероприятия
 
-        internal static void LookEvents(Person person, MessageReceivedEventArgs e)
+        internal static void LookEvents(Client person, MessageReceivedEventArgs e)
         {
             switch (e.Message.Text)
             {
                 case "Посмотреть мероприятия":
                     {
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents, minor: 0);
+                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents, minor: 0);
                         MessageConstructor.WatchEvents(person, e);
                         return;
                     }
                 case "->":
                     {
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents, minor: person.Minor + 1);
+                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents, minor: person.Minor + 1);
                         person.Minor += 1;
                         MessageConstructor.WatchEvents(person, e);
                         return;
                     }
                 case "<-":
                     {
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents, minor: person.Minor - 1);
+                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents, minor: person.Minor - 1);
                         person.Minor -= 1;
                         MessageConstructor.WatchEvents(person, e);
                         return;
                     }
                 case "Назад":
                     {
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.Normal, minor: 0);
+                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.Normal, minor: 0);
                         MessageConstructor.Back(person, e);
                         return;
                     }
                 default:
                     {
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.RequestEvent);
+                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.RequestEvent);
                         LookEvent(person, e);
                         return;
                     }
             }
         }
 
-        internal static void LookEvent(Person person, MessageReceivedEventArgs e)
+        internal static void LookEvent(Client person, MessageReceivedEventArgs e)
         {
             var @event = Event.GetEventFromActual(e.Message.Text);
             if (@event == null)
                 @event = Event.ActualEvents[person.Minor];
             else
-                UsersDatabase.UserSetParams(person.Id, minor: Event.ActualEvents.IndexOf(@event));
+                ClientDatabase.UserSetParams(person.Id, minor: Event.ActualEvents.IndexOf(@event));
 
             switch (e.Message.Text)
             {
                 case "Назад":
                     {
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents);
+                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents);
                         MessageConstructor.WatchEvents(person, e);
                         return;
                     }
@@ -155,13 +152,13 @@ namespace vkBot
                     {
                         EventsDatabase.EventSetParams(id: @event.Id, isActual: false);
                         Event.ActualEvents.Remove(@event);
-                        UsersDatabase.UserSetParams(person.Id, minor: 0);
+                        ClientDatabase.UserSetParams(person.Id, minor: 0);
                         MessageConstructor.WatchEvents(person, e);
                         return;
                     }
                 case "Редактировать": // работает как назад
                     {
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents);
+                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents);
                         MessageConstructor.WatchEvents(person, e);
                         return;
                     }
@@ -178,7 +175,7 @@ namespace vkBot
 
         #region Создать мероприятие
 
-        internal static void CreateEvent(Person person, MessageReceivedEventArgs e)
+        internal static void CreateEvent(Client person, MessageReceivedEventArgs e)
         {
             switch (e.Message.Text)
             {
@@ -197,49 +194,49 @@ namespace vkBot
                         Event.OnCreatedEvents.Remove(person.Id);
 
                         MessageConstructor.OnCreateEvent(person, e);
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.Normal, minor: 0);
+                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.Normal, minor: 0);
                         return;
                     }
                 case "Название":
                     {
                         MessageConstructor.WaitingParameters_Name(person, e);
-                        UsersDatabase.UserSetParams(person.Id, minor: (int)Create.Name);
+                        ClientDatabase.UserSetParams(person.Id, minor: (int)Create.Name);
                         return;
                     }
                 case "Опиcание":
                     {
                         MessageConstructor.WaitingParameters_Describe(person, e);
-                        UsersDatabase.UserSetParams(person.Id, minor: (int)Create.Describe);
+                        ClientDatabase.UserSetParams(person.Id, minor: (int)Create.Describe);
                         return;
                     }
                 case "Время начала":
                     {
                         MessageConstructor.WaitingParameters_StartTime(person, e);
-                        UsersDatabase.UserSetParams(person.Id, minor: (int)Create.StartTime);
+                        ClientDatabase.UserSetParams(person.Id, minor: (int)Create.StartTime);
                         return;
                     }
                 case "Время конца":
                     {
                         MessageConstructor.WaitingParameters_EndTime(person, e);
-                        UsersDatabase.UserSetParams(person.Id, minor: (int)Create.EndTime);
+                        ClientDatabase.UserSetParams(person.Id, minor: (int)Create.EndTime);
                         return;
                     }
                 case "Число волонтёров":
                     {
                         MessageConstructor.WaitingParameters_Seats(person, e);
-                        UsersDatabase.UserSetParams(person.Id, minor: (int)Create.Seats);
+                        ClientDatabase.UserSetParams(person.Id, minor: (int)Create.Seats);
                         return;
                     }
                 case "Место":
                     {
                         MessageConstructor.WaitingParameters_Place(person, e);
-                        UsersDatabase.UserSetParams(person.Id, minor: (int)Create.Place);
+                        ClientDatabase.UserSetParams(person.Id, minor: (int)Create.Place);
                         return;
                     }
                 case "Назад":
                     {
                         MessageConstructor.Back(person, e);
-                        UsersDatabase.UserSetParams(person.Id, major: (int)Major.Normal, minor: 0);
+                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.Normal, minor: 0);
                         return;
                     }
                 default:
@@ -249,7 +246,7 @@ namespace vkBot
                     }
             }
         }
-        internal static void SetParamEvent(Person person, MessageReceivedEventArgs e)
+        internal static void SetParamEvent(Client person, MessageReceivedEventArgs e)
         {
             //получение создаваемого мероприятия
             var @event = EventsDatabase.FindEvents(id: Event.OnCreatedEvents.GetValueOrDefault(person.Id)).First();

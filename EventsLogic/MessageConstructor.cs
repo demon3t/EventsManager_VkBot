@@ -1,4 +1,5 @@
-﻿using EventsLogic.DatabaseRequest;
+﻿using EventsLogic.Basic;
+using EventsLogic.DatabaseRequest;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace EventsLogic
 
         #region RequestEvent
 
-        public static void RequestEvent(Person person, MessageReceivedEventArgs e)
+        public static void RequestEvent(Client person, MessageReceivedEventArgs e)
         {
 
             //string message =
@@ -54,31 +55,21 @@ namespace EventsLogic
 
         #region FirstOccurrence
 
-        public static void FirstOccurrence(Person person, MessageReceivedEventArgs e)
-        {
-            string message =
-                $"Привет {person.Name}. Данный бот может:{Environment.NewLine}" +
-                $"➤  Записывать на доступные мероприятия;{Environment.NewLine}" +
-                $"➤  Заранее оповещать о начале мероприятий;{Environment.NewLine}" +
-                $"➤  Показать посещённые мероприяти;{Environment.NewLine}" +
-                $"➤  Показывать статистику.";
-
-            SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
-        }
+        
 
         #endregion
 
         #region MainMenu
 
-        public static void AboutMe(Person person, MessageReceivedEventArgs e)
+        public static void AboutMe(Client person, MessageReceivedEventArgs e)
         {
             string message =
-                UsersDatabase.AboutMe(e.Message.PeerId.ToString());
+                ClientDatabase.AboutMe(e.Message.PeerId.ToString());
 
             SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
         }
 
-        public static void WatchEvents(Person person, MessageReceivedEventArgs e)
+        public static void WatchEvents(Client person, MessageReceivedEventArgs e)
         {
             string message =
                 $"Активые мероприятия{Environment.NewLine}" +
@@ -88,7 +79,7 @@ namespace EventsLogic
         }
 
         #region WatchEvent
-        public static void WatchEventError(Person person, MessageReceivedEventArgs e)
+        public static void WatchEventError(Client person, MessageReceivedEventArgs e)
         {
             string message =
                     "Что-то пошло не так";
@@ -96,7 +87,7 @@ namespace EventsLogic
             SendMessage(e, message, KeyboardConstructor.WatchEvents(person, e));
         }
 
-        public static void WatchEvent(Event @event, Person person, MessageReceivedEventArgs e)
+        public static void WatchEvent(Event @event, Client person, MessageReceivedEventArgs e)
         {
             string message =
                 @event.ToString();
@@ -106,7 +97,7 @@ namespace EventsLogic
 
         #endregion
 
-        public static void MyEvents(Person person, MessageReceivedEventArgs e)
+        public static void MyEvents(Client person, MessageReceivedEventArgs e)
         {
             string message =
                 "Ваши мероприятия";
@@ -115,7 +106,7 @@ namespace EventsLogic
         }
 
 
-        public static void CompletEvents(Person person, MessageReceivedEventArgs e)
+        public static void CompletEvents(Client person, MessageReceivedEventArgs e)
         {
             string message =
                 "Необходимо заполнить всю обязательную информация (кнопки красного цвета).";
@@ -128,7 +119,7 @@ namespace EventsLogic
 
         #region Back
 
-        public static void Back(Person person, MessageReceivedEventArgs e)
+        public static void Back(Client person, MessageReceivedEventArgs e)
         {
             string message = "Возвращаю на главное меню";
             SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
@@ -141,7 +132,7 @@ namespace EventsLogic
         /// <summary>
         /// Сообщение измменения параметра мероприятия
         /// </summary>
-        public static void CreateEvent(Person person, MessageReceivedEventArgs e)
+        public static void CreateEvent(Client person, MessageReceivedEventArgs e)
         {
             Event @event = EventsDatabase.FindEvents(id: Event.OnCreatedEvents.GetValueOrDefault(person.Id)).First();
 
@@ -155,7 +146,7 @@ namespace EventsLogic
         /// <summary>
         /// Сообщение создания Мероприятия
         /// </summary>
-        public static void OnCreateEvent(Person person, MessageReceivedEventArgs e)
+        public static void OnCreateEvent(Client person, MessageReceivedEventArgs e)
         {
             Event @event = Event.ActualEvents.Find(x => x.Author == person.Id);
 
@@ -169,7 +160,7 @@ namespace EventsLogic
 
         #region WaitingParameters
 
-        public static void WaitingParameters_Name(Person person, MessageReceivedEventArgs e)
+        public static void WaitingParameters_Name(Client person, MessageReceivedEventArgs e)
         {
             string message =
                 "Обязательное поля для заполнения";
@@ -177,7 +168,7 @@ namespace EventsLogic
             SendMessage(e, message);
         }
 
-        public static void WaitingParameters_Describe(Person person, MessageReceivedEventArgs e)
+        public static void WaitingParameters_Describe(Client person, MessageReceivedEventArgs e)
         {
             string message =
                 "Не обязательное поля для заполнения";
@@ -185,7 +176,7 @@ namespace EventsLogic
             SendMessage(e, message);
         }
 
-        public static void WaitingParameters_StartTime(Person person, MessageReceivedEventArgs e)
+        public static void WaitingParameters_StartTime(Client person, MessageReceivedEventArgs e)
         {
             string message =
                 $"Обязательное поля для заполнения {Environment.NewLine}" +
@@ -194,7 +185,7 @@ namespace EventsLogic
             SendMessage(e, message);
         }
 
-        public static void WaitingParameters_EndTime(Person person, MessageReceivedEventArgs e)
+        public static void WaitingParameters_EndTime(Client person, MessageReceivedEventArgs e)
         {
             string message =
                 $"Обязательное поля для заполнения {Environment.NewLine}" +
@@ -203,7 +194,7 @@ namespace EventsLogic
             SendMessage(e, message);
         }
 
-        public static void WaitingParameters_Seats(Person person, MessageReceivedEventArgs e)
+        public static void WaitingParameters_Seats(Client person, MessageReceivedEventArgs e)
         {
             string message =
                 "Обязательное поля для заполнения";
@@ -211,7 +202,7 @@ namespace EventsLogic
             SendMessage(e, message);
         }
 
-        public static void WaitingParameters_Place(Person person, MessageReceivedEventArgs e)
+        public static void WaitingParameters_Place(Client person, MessageReceivedEventArgs e)
         {
             string message =
                 "Не обязательное поля для заполнения";
@@ -221,7 +212,7 @@ namespace EventsLogic
 
         #endregion
 
-        public static void Error(Person person, MessageReceivedEventArgs e)
+        public static void Error(Client person, MessageReceivedEventArgs e)
         {
             string message = "Error massage";
             SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));

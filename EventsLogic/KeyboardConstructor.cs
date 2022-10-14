@@ -1,4 +1,5 @@
-﻿using EventsLogic.DatabaseRequest;
+﻿using EventsLogic.Basic;
+using EventsLogic.DatabaseRequest;
 using System;
 using System.Data;
 using VkBotFramework.Models;
@@ -40,7 +41,7 @@ namespace EventsLogic
             return keyboard;
         }
 
-        internal static KeyboardBuilder WatchEvents(Person person, MessageReceivedEventArgs e)
+        internal static KeyboardBuilder WatchEvents(Client person, MessageReceivedEventArgs e)
         {
             KeyboardBuilder keyboard = new KeyboardBuilder();
 
@@ -68,7 +69,7 @@ namespace EventsLogic
             return keyboard;
         }
 
-        internal static KeyboardBuilder OnEvent(Event @event, Person person, MessageReceivedEventArgs e)
+        internal static KeyboardBuilder OnEvent(Event @event, Client person, MessageReceivedEventArgs e)
         {
             KeyboardBuilder keyboard = new KeyboardBuilder();
 

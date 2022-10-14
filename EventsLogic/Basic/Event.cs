@@ -1,10 +1,10 @@
 ﻿using EventsLogic.DatabaseRequest;
 using EventsLogic.HeplerInterfaces;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace EventsLogic
+namespace EventsLogic.Basic
 {
     public class Event : IListDataTime
     {
@@ -17,7 +17,7 @@ namespace EventsLogic
         public int Id { get; set; }
         public string Author { get; set; }
         public DateTime CreateTime { get; set; }
-        public int _Seats { get; set; }
+        public int Occup { get; set; }
 
         public bool IsActual
         {
@@ -104,7 +104,6 @@ namespace EventsLogic
         {
             Author = author;
         }
-        public Event() { Author = ""; }
 
         #endregion
 
@@ -118,6 +117,7 @@ namespace EventsLogic
             return true;
         }
 
+
         public static Event? GetEventFromActual(string? insexStr)
         {
             if (int.TryParse(insexStr, out int index))
@@ -128,43 +128,29 @@ namespace EventsLogic
             return null;
         }
 
-
-        private static bool Nullable(object? obj)
-        {
-            if (obj == null) return true;
-            return false;
-        }
-
         public static bool operator ==(Event a, Event b)
         {
-            if (Nullable(a) && !Nullable(b)) return false;
-            if (!Nullable(a) && Nullable(b)) return false;
-            if (Nullable(a) && Nullable(b)) return true;
-            return a.Id == b.Id;
+            if (a is Event && b is Event) return a.Id == b.Id;
+            return false;
         }
-
         public static bool operator !=(Event a, Event b)
         {
-            if (Nullable(a) && !Nullable(b)) return true;
-            if (!Nullable(a) && Nullable(b)) return true;
-            if (Nullable(a) && Nullable(b)) return false;
-            return a.Id != b.Id;
+            if (a is Event && b is Event) return a.Id != b.Id;
+            return true;
         }
+
+        #region override
 
         public override bool Equals(object obj)
         {
-            var @event = obj as Event;
-            if (@event != null)
-            {
-                return @event.Id == this.Id;
-            }
+            if (obj is Event) return ((Event)obj).Id == Id;
             return false;
         }
+
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return Id ^ Id;
         }
-
         public override string ToString()
         {
             return
@@ -172,11 +158,11 @@ namespace EventsLogic
                 $"{(string.IsNullOrWhiteSpace(_name) ? "" : _name + Environment.NewLine)}" +
                 $"C {_startTime} {Environment.NewLine}" +
                 $"до {_endTime} {Environment.NewLine}" +
-                $"нужны {_seats - _Seats} волонтёра(ов) из {_seats + Environment.NewLine}" +
+                $"нужны {_seats - Occup} волонтёра(ов) из {_seats + Environment.NewLine}" +
                 $"{(string.IsNullOrWhiteSpace(_name) ? "" : "Место проведения " + _name)}";
         }
 
-
+        #endregion
 
         public DateTime SortDateTime() => StartTime;
     }
