@@ -1,4 +1,5 @@
 ﻿using EventsLogic.DatabaseRequest;
+using EventsLogic.HelperClasses;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -72,6 +73,7 @@ namespace EventsLogic.Basic
             }
         }
         private int _minor;
+        public int TempMinor;
 
         #endregion
 
@@ -85,6 +87,17 @@ namespace EventsLogic.Basic
         }
 
         #endregion
+
+        public string About()
+        {
+            return
+                $"{(_name.IsNaN() ? "" : $"Имя: {_name}{Environment.NewLine}")}" +
+                $"{(_surname.IsNaN() ? "" : $"Фамилия: {_surname}{Environment.NewLine}")}" +
+                $"Администратор: {(_isAdmin ? "да" : "нет")}{Environment.NewLine}" +
+                $"Рейтинг: {"пока ничего"}{Environment.NewLine}" +
+                $"Что то ещё: {"пока не придумал"}{Environment.NewLine}";
+        }
+
 
         public static bool operator ==(Client a, Client b)
         {

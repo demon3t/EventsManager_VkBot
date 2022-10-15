@@ -29,7 +29,7 @@ namespace vkBot.Logistics.MainMenu.ViewEvents.PickedEvent
                     }
                 case "Редактировать": // coomin soon -
                     {
-                        Editing(client, e, @event);
+                        Eding(client, e, @event);
                         return;
                     }
                 case "Удалить": // coomin soon -
@@ -50,8 +50,6 @@ namespace vkBot.Logistics.MainMenu.ViewEvents.PickedEvent
             }
         }
 
-        #region Response options
-
         internal static void This(Client client, MessageReceivedEventArgs e, Event @event)
         {
             client.Major = (int)Major.PickedEvent;
@@ -62,10 +60,12 @@ namespace vkBot.Logistics.MainMenu.ViewEvents.PickedEvent
             SendMessage(e, message, KeyboardThis(client, @event));
         }
 
+        #region Response options
+
         private static void Come(Client client, MessageReceivedEventArgs e, Event @event)
         {
             string message =
-                $"Не идёшь";
+                $"Идёшь";
 
             SendMessage(e, message, KeyboardThis(client, @event));
         }
@@ -73,19 +73,15 @@ namespace vkBot.Logistics.MainMenu.ViewEvents.PickedEvent
         private static void NotCome(Client client, MessageReceivedEventArgs e, Event @event)
         {
             string message =
-                $"Идешь";
+                $"Не идешь";
 
             SendMessage(e, message, KeyboardThis(client, @event));
         }
-
-        private static void Editing(Client client, MessageReceivedEventArgs e, Event @event)
+        private static void Eding(Client client, MessageReceivedEventArgs e, Event @event)
         {
             if (!client.IsAdmin) return;
-
-            string message =
-                $"Редактирование";
-
-            SendMessage(e, message, KeyboardThis(client, @event));
+            client.Major = (int)Major.EdingEvent;
+            EventEditor.EventEditor.Go(client, e, @event);
         }
 
         private static void Delete(Client client, MessageReceivedEventArgs e, Event @event)

@@ -1,5 +1,4 @@
-﻿using EventsLogic.Basic;
-using EventsLogic.HelperClasses;
+﻿using EventsLogic.HelperClasses;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;

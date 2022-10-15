@@ -10,10 +10,15 @@ namespace vkBot.General
 {
     internal static class MessageGeneral
     {
-        public static VkBot vkBot { private get; set; }
+        private static VkBot _vkBot;
+        static MessageGeneral()
+        {
+            _vkBot = Program.vkBot;
+        }
+
         internal static void SendMessage(MessageReceivedEventArgs e, string message, KeyboardBuilder keyboard)
         {
-            vkBot.Api.Messages.Send(new MessagesSendParams()
+            _vkBot.Api.Messages.Send(new MessagesSendParams()
             {
                 Message = message,
                 UserId = e.Message.PeerId,
@@ -24,7 +29,7 @@ namespace vkBot.General
 
         internal static void SendMessage(MessageReceivedEventArgs e, string message)
         {
-            vkBot.Api.Messages.Send(new MessagesSendParams()
+            _vkBot.Api.Messages.Send(new MessagesSendParams()
             {
                 Message = message,
                 UserId = e.Message.PeerId,

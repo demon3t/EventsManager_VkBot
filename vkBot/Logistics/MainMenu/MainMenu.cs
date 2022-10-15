@@ -20,6 +20,7 @@ namespace vkBot.Logistics.MainMenu
                     }
                 case "Создать мероприятие":
                     {
+                        EventEditor.EventEditor.Go(client, e);
                         return;
                     }
                 case "Мои мероприятия":
@@ -52,6 +53,8 @@ namespace vkBot.Logistics.MainMenu
             SendMessage(e, message, KeyboardThis(client));
         }
 
+        #region Response options
+
         private static void Information(Client client, MessageReceivedEventArgs e)
         {
             string message =
@@ -63,10 +66,12 @@ namespace vkBot.Logistics.MainMenu
         private static void AboutMe(Client client, MessageReceivedEventArgs e)
         {
             string message =
-                "Информация о пользователе";
+                client.About();
 
             SendMessage(e, message, KeyboardThis(client));
         }
+
+        #endregion
 
         internal static KeyboardBuilder KeyboardThis(Client client)
         {

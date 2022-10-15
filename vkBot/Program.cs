@@ -1,17 +1,15 @@
-﻿using EventsLogic;
+﻿using EventsLogic.Basic;
 using EventsLogic.DatabaseRequest;
 using System;
 using System.Linq;
+using vkBot.Logistics;
+using vkBot.Logistics.MainMenu;
+using vkBot.Logistics.MainMenu.EventEditor;
+using vkBot.Logistics.MainMenu.ViewEvents;
+using vkBot.Logistics.MainMenu.ViewEvents.PickedEvent;
 using VkBotFramework;
 using VkBotFramework.Models;
 using VkNet.Model.RequestParams;
-using EventsLogic.HelperClasses;
-using EventsLogic.Basic;
-using vkBot.General;
-using vkBot.Logistics;
-using vkBot.Logistics.MainMenu;
-using vkBot.Logistics.MainMenu.ViewEvents;
-using vkBot.Logistics.MainMenu.ViewEvents.PickedEvent;
 
 namespace vkBot
 {
@@ -20,7 +18,7 @@ namespace vkBot
         /// <summary>
         /// API VKBot
         /// </summary>
-        private static VkBot vkBot = new VkBot(config.Token, config.URL);
+        public readonly static VkBot vkBot = new VkBot(config.Token, config.URL);
 
         public enum Major
         {
@@ -33,14 +31,12 @@ namespace vkBot
             MyEvents = 3,
 
             CreateEvent = 4,
-            CompletEvents = 5,
+            EdingEvent = 5,
         }
 
 
         static void Main(string[] args)
         {
-            MessageConstructor.vkBot = vkBot;
-            MessageGeneral.vkBot = vkBot;
             vkBot.OnBotStarted += VkBot_OnBotStarted;
 
             vkBot.Start();
@@ -70,27 +66,40 @@ namespace vkBot
 
             switch (person.Major)
             {
-                case 0:
-                    Entry.Go(person, e); // ready
-                    return;
-                case 1:
-                    MainMenu.Go(person, e); // ready
-                    return;
-                case 2:
-                    ViewEvents.Go(person, e);
-                    return;
-                case 3:
-
-                    return;
-                case 4:
-                    StatusLogic.CreateEvent(person, e);
-                    return;
-                case 5:
-
-                    return;
-                case 6:
-                    PickedEvent.Go(person, e);
-                    return;
+                case (int)Major.FirstOccurrence: // ready
+                    {
+                        Entry.Go(person, e);
+                        return;
+                    }
+                case (int)Major.Normal: // ready
+                    {
+                        MainMenu.Go(person, e);
+                        return;
+                    }
+                case (int)Major.ViewEvents: // ready
+                    {
+                        ViewEvents.Go(person, e);
+                        return;
+                    }
+                case (int)Major.MyEvents:
+                    {
+                        return;
+                    }
+                case (int)Major.CreateEvent: // ready
+                    {
+                        EventEditor.Go(person, e);
+                        return;
+                    }
+                case (int)Major.EdingEvent: // ready
+                    {
+                        EventEditor.Go(person, e);
+                        return;
+                    }
+                case (int)Major.PickedEvent: // ready
+                    {
+                        PickedEvent.Go(person, e);
+                        return;
+                    }
                 default: return;
             }
 

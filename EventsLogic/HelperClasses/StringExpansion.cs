@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EventsLogic.HelperClasses
 {
-    public static class DateTimeExpansion
+    public static class StringExpansion
     {
         public static bool AdvansedParse(this string str, out DateTime result)
         {
@@ -61,7 +61,6 @@ namespace EventsLogic.HelperClasses
 
             return false;
         }
-
         private static bool TryParseToSeparator(out int result, ref string str, char separator, int countSeparator)
         {
             result = 0;
@@ -93,6 +92,12 @@ namespace EventsLogic.HelperClasses
             int.TryParse(resStr, out result);
 
             return true;
+        }
+
+
+        public static bool IsNaN(this string str)
+        {
+            return str == "NaN" ? true : false;
         }
     }
 }
