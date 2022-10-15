@@ -60,6 +60,8 @@
     <Folder Include="Properties" />
     <Folder Include="Security\" />
     <Folder Include="Server Objects\" />
+    <Folder Include="EventsProcedures" />
+    <Folder Include="UsersProcedures" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Security\sa.sql" />
@@ -70,5 +72,11 @@
     <Build Include="Server Objects\QuickSessionStandard.sql" />
     <Build Include="Users.sql" />
     <Build Include="Events.sql" />
+    <Build Include="EventsProcedures\EventAdd.sql" />
+    <Build Include="EventsProcedures\EventFindByParams.sql" />
+    <Build Include="EventsProcedures\EventSetParams.sql" />
+    <Build Include="EventsProcedures\EventLastId.sql" />
+    <Build Include="UsersProcedures\UserAdd.sql" />
+    <Build Include="UsersProcedures\UserFindByParams.sql" />
   </ItemGroup>
 </Project>
