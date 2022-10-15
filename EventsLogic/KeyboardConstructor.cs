@@ -144,44 +144,6 @@ namespace EventsLogic
 
         #region WaitingParameters
 
-        //public static void WaitingParameters_Name(Person person, MessageReceivedEventArgs e)
-        //{
-        //    string message = "Обязательное поля для заполнения";
-
-        //    SendMessage(e, message);
-        //}
-
-        //public static void WaitingParameters_Describe(Person person, MessageReceivedEventArgs e)
-        //{
-        //    string message = "Не обязательное поля для заполнения";
-
-        //    SendMessage(e, message);
-        //}
-
-        //public static void WaitingParameters_StartTime(Person person, MessageReceivedEventArgs e)
-        //{
-        //    string message =
-        //        "Обязательное поля для заполнения\n" +
-        //        "Формат записи: дд.мм.гггг чч:мм";
-
-        //    SendMessage(e, message);
-        //}
-
-        //public static void WaitingParameters_EndTime(Person person, MessageReceivedEventArgs e)
-        //{
-        //    string message =
-        //        "Обязательное поля для заполнения\n" +
-        //        "Формат записи: дд.мм.гггг чч:мм";
-
-        //    SendMessage(e, message);
-        //}
-
-        //public static void WaitingParameters_Seats(Person person, MessageReceivedEventArgs e)
-        //{
-        //    string message = "Обязательное поля для заполнения";
-
-        //    SendMessage(e, message);
-        //}
 
         public static KeyboardBuilder WaitingParameters_Place()
         {

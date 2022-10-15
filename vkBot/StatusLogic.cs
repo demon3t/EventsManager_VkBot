@@ -39,98 +39,10 @@ namespace vkBot
         }
 
 
-        internal static void MainMenu(Client person, MessageReceivedEventArgs e)
-        {
-            switch (e.Message.Text)
-            {
-                case "Посмотреть мероприятия":
-                    {
-                        LookEvents(person, e);
-                        return;
-                    }
-                case "Создать мероприятие":
-                    {
-                        //возврат если пользователь не админ
-                        if (!person.IsAdmin) return;
-
-                        //добавлние нового мероприятия в базу данных
-                        EventsDatabase.AddEvent(person.Id);
-
-                        //добавление индекса в лист создаваемого мероприятия
-                        Event.OnCreatedEvents.Add(person.Id, EventsDatabase.SetLastIndex());
-
-                        MessageConstructor.CreateEvent(person, e);
-                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.CreateEvent, minor: 0);
-                        return;
-                    }
-                case "Мои мероприятия":
-                    {
-                        MessageConstructor.MyEvents(person, e);
-                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.MyEvents, minor: 0);
-                        return;
-                    }
-                case "Завершённые мероприятия":
-                    {
-                        MessageConstructor.CompletEvents(person, e);
-                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.CompletEvents, minor: 0);
-                        return;
-                    }
-                case "Информация":
-                    {
-                        Entry.Go(person, e);
-                        return;
-                    }
-                case "Обо мне":
-                    {
-                        MessageConstructor.AboutMe(person, e);
-                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.Normal, minor: 0);
-                        return;
-                    }
-                default: return;
-            }
-        }
 
 
         #region Посмотреть мероприятия
 
-        internal static void LookEvents(Client person, MessageReceivedEventArgs e)
-        {
-            switch (e.Message.Text)
-            {
-                case "Посмотреть мероприятия":
-                    {
-                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents, minor: 0);
-                        MessageConstructor.WatchEvents(person, e);
-                        return;
-                    }
-                case "->":
-                    {
-                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents, minor: person.Minor + 1);
-                        person.Minor += 1;
-                        MessageConstructor.WatchEvents(person, e);
-                        return;
-                    }
-                case "<-":
-                    {
-                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.LookEvents, minor: person.Minor - 1);
-                        person.Minor -= 1;
-                        MessageConstructor.WatchEvents(person, e);
-                        return;
-                    }
-                case "Назад":
-                    {
-                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.Normal, minor: 0);
-                        MessageConstructor.Back(person, e);
-                        return;
-                    }
-                default:
-                    {
-                        ClientDatabase.UserSetParams(person.Id, major: (int)Major.RequestEvent);
-                        LookEvent(person, e);
-                        return;
-                    }
-            }
-        }
 
         internal static void LookEvent(Client person, MessageReceivedEventArgs e)
         {

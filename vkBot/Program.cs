@@ -10,6 +10,8 @@ using EventsLogic.Basic;
 using vkBot.General;
 using vkBot.Logistics;
 using vkBot.Logistics.MainMenu;
+using vkBot.Logistics.MainMenu.ViewEvents;
+using vkBot.Logistics.MainMenu.ViewEvents.PickedEvent;
 
 namespace vkBot
 {
@@ -75,7 +77,7 @@ namespace vkBot
                     MainMenu.Go(person, e); // ready
                     return;
                 case 2:
-                    StatusLogic.LookEvents(person, e);
+                    ViewEvents.Go(person, e);
                     return;
                 case 3:
 
@@ -87,7 +89,7 @@ namespace vkBot
 
                     return;
                 case 6:
-                    StatusLogic.LookEvent(person, e);
+                    PickedEvent.Go(person, e);
                     return;
                 default: return;
             }

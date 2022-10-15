@@ -41,14 +41,7 @@ namespace EventsLogic
 
         #region RequestEvent
 
-        public static void RequestEvent(Client person, MessageReceivedEventArgs e)
-        {
-
-            //string message =
-
-
-            //SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
-        }
+     
 
         #endregion
 
@@ -79,13 +72,7 @@ namespace EventsLogic
         }
 
         #region WatchEvent
-        public static void WatchEventError(Client person, MessageReceivedEventArgs e)
-        {
-            string message =
-                    "Что-то пошло не так";
-
-            SendMessage(e, message, KeyboardConstructor.WatchEvents(person, e));
-        }
+      
 
         public static void WatchEvent(Event @event, Client person, MessageReceivedEventArgs e)
         {
@@ -96,23 +83,6 @@ namespace EventsLogic
         }
 
         #endregion
-
-        public static void MyEvents(Client person, MessageReceivedEventArgs e)
-        {
-            string message =
-                "Ваши мероприятия";
-
-            SendMessage(e, message, KeyboardConstructor.MyEvents(e));
-        }
-
-
-        public static void CompletEvents(Client person, MessageReceivedEventArgs e)
-        {
-            string message =
-                "Необходимо заполнить всю обязательную информация (кнопки красного цвета).";
-
-            SendMessage(e, message, KeyboardConstructor.CompletEvents(e));
-        }
 
 
         #endregion
@@ -212,11 +182,6 @@ namespace EventsLogic
 
         #endregion
 
-        public static void Error(Client person, MessageReceivedEventArgs e)
-        {
-            string message = "Error massage";
-            SendMessage(e, message, KeyboardConstructor.MainMenu(person.IsAdmin));
-        }
     }
 }
 
