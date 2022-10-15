@@ -1,13 +1,9 @@
-﻿using System;
-using EventsLogic;
-using EventsLogic.Basic;
-using EventsLogic.DatabaseRequest;
+﻿using EventsLogic.Basic;
 using VkBotFramework.Models;
 using VkNet.Enums.SafetyEnums;
 using VkNet.Model.Keyboard;
 using static vkBot.General.KeyboardGeneral;
 using static vkBot.General.MessageGeneral;
-using static vkBot.Program;
 
 namespace vkBot.Logistics.MainMenu
 {
@@ -19,6 +15,7 @@ namespace vkBot.Logistics.MainMenu
             {
                 case "Посмотреть мероприятия":
                     {
+                        ViewEvents.ViewEvents.Go(client, e);
                         return;
                     }
                 case "Создать мероприятие":
@@ -40,7 +37,7 @@ namespace vkBot.Logistics.MainMenu
                     }
                 case "Обо мне": // ready
                     {
-                        AboutMe(client, e); 
+                        AboutMe(client, e);
                         return;
                     }
                 default: return;

@@ -27,12 +27,12 @@ namespace vkBot.Logistics.MainMenu.ViewEvents.PickedEvent
                         NotCome(client, e, @event);
                         return;
                     }
-                case "Редактировать": // coomin soon
+                case "Редактировать": // coomin soon -
                     {
                         Editing(client, e, @event);
                         return;
                     }
-                case "Удалить": // coomin soon
+                case "Удалить": // coomin soon -
                     {
                         Delete(client, e, @event);
                         return;
@@ -44,6 +44,7 @@ namespace vkBot.Logistics.MainMenu.ViewEvents.PickedEvent
                     }
                 default:
                     {
+                        This(client, e, @event);
                         return;
                     }
             }
@@ -53,7 +54,7 @@ namespace vkBot.Logistics.MainMenu.ViewEvents.PickedEvent
 
         internal static void This(Client client, MessageReceivedEventArgs e, Event @event)
         {
-            client.Major = (int)Major.ViewEvents;
+            client.Major = (int)Major.PickedEvent;
 
             string message =
                 $"Информация о мероприятии";
@@ -63,8 +64,6 @@ namespace vkBot.Logistics.MainMenu.ViewEvents.PickedEvent
 
         private static void Come(Client client, MessageReceivedEventArgs e, Event @event)
         {
-            client.Major = (int)Major.ViewEvents;
-
             string message =
                 $"Не идёшь";
 
@@ -73,8 +72,6 @@ namespace vkBot.Logistics.MainMenu.ViewEvents.PickedEvent
 
         private static void NotCome(Client client, MessageReceivedEventArgs e, Event @event)
         {
-            client.Major = (int)Major.ViewEvents;
-
             string message =
                 $"Идешь";
 
@@ -83,7 +80,7 @@ namespace vkBot.Logistics.MainMenu.ViewEvents.PickedEvent
 
         private static void Editing(Client client, MessageReceivedEventArgs e, Event @event)
         {
-            client.Major = (int)Major.ViewEvents;
+            if (!client.IsAdmin) return;
 
             string message =
                 $"Редактирование";
@@ -93,7 +90,7 @@ namespace vkBot.Logistics.MainMenu.ViewEvents.PickedEvent
 
         private static void Delete(Client client, MessageReceivedEventArgs e, Event @event)
         {
-            client.Major = (int)Major.ViewEvents;
+            if (!client.IsAdmin) return;
 
             string message =
                 $"Удаление";
