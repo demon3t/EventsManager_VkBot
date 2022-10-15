@@ -9,6 +9,7 @@ using EventsLogic.HelperClasses;
 using EventsLogic.Basic;
 using vkBot.General;
 using vkBot.Logistics;
+using vkBot.Logistics.MainMenu;
 
 namespace vkBot
 {
@@ -24,8 +25,8 @@ namespace vkBot
             FirstOccurrence = 0,
             Normal = 1,
 
-            LookEvents = 2,
-            RequestEvent = 6,
+            ViewEvents = 2,
+            PickedEvent = 6,
 
             MyEvents = 3,
 
@@ -71,22 +72,22 @@ namespace vkBot
                     Entry.Go(person, e); // ready
                     return;
                 case 1:
-                    StatusLogic.MainMenu(person, e); // ready
+                    MainMenu.Go(person, e); // ready
                     return;
                 case 2:
-                    StatusLogic.LookEvents(person, e); // ready
+                    StatusLogic.LookEvents(person, e);
                     return;
                 case 3:
 
                     return;
                 case 4:
-                    StatusLogic.CreateEvent(person, e);  // ready
+                    StatusLogic.CreateEvent(person, e);
                     return;
                 case 5:
 
                     return;
                 case 6:
-                    StatusLogic.LookEvent(person, e); // ready
+                    StatusLogic.LookEvent(person, e);
                     return;
                 default: return;
             }
