@@ -1,0 +1,4 @@
+﻿CREATE PROCEDURE [EventsLastId]
+AS
+SELECT Id AS LastId FROM Events
+WHERE Id = (SELECT MAX(Id) FROM Events)
