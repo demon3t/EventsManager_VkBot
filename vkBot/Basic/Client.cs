@@ -1,8 +1,9 @@
-﻿using EventsLogic.DatabaseRequest;
-using EventsLogic.HelperClasses;
+﻿using EventsLogic.HelperClasses;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using vkBot.HelperElements;
+using static vkBot.Request.ClientRequest;
 
 namespace EventsLogic.Basic
 {
@@ -12,12 +13,12 @@ namespace EventsLogic.Basic
 
         #region свойства
 
-        public string Id
+        public long Id
         {
             get { return _id; }
             set { _id = value; }
         }
-        private string _id;
+        private long _id;
 
         public string Surname
         {
@@ -25,7 +26,7 @@ namespace EventsLogic.Basic
             set
             {
                 _surname = value;
-                ClientDatabase.UserSetParams(id: _id, surname: _surname);
+                Set(id: _id, surname: _surname);
             }
         }
         private string _surname;
@@ -36,7 +37,7 @@ namespace EventsLogic.Basic
             set
             {
                 _name = value;
-                ClientDatabase.UserSetParams(id: _id, name: _name);
+                Set(id: _id, name: _name);
             }
         }
         private string _name;
@@ -47,7 +48,7 @@ namespace EventsLogic.Basic
             set
             {
                 _isAdmin = value;
-                ClientDatabase.UserSetParams(id: _id, admin: _isAdmin);
+                Set(id: _id, admin: _isAdmin);
             }
         }
         private bool _isAdmin;
@@ -58,7 +59,7 @@ namespace EventsLogic.Basic
             set
             {
                 _major = value;
-                ClientDatabase.UserSetParams(id: _id, major: _major);
+                Set(id: _id, major: _major);
             }
         }
         private int _major;
@@ -69,7 +70,7 @@ namespace EventsLogic.Basic
             set
             {
                 _minor = value;
-                ClientDatabase.UserSetParams(id: _id, minor: _minor);
+                Set(id: _id, minor: _minor);
             }
         }
         private int _minor;
@@ -79,7 +80,7 @@ namespace EventsLogic.Basic
 
         #region конструкторы
 
-        public Client(string id, string name = "NaN", string surname = "NaN")
+        public Client(long id, string name = "NaN", string surname = "NaN")
         {
             _id = id;
             _name = name;
@@ -119,7 +120,7 @@ namespace EventsLogic.Basic
         }
         public override int GetHashCode()
         {
-            return int.Parse(Id) ^ int.Parse(Id);
+            return (int)_id ^ (int)_id;
         }
 
         #endregion

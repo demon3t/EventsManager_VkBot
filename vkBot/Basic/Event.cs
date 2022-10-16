@@ -1,8 +1,10 @@
-﻿using EventsLogic.DatabaseRequest;
+﻿using vkBot.Request;
 using EventsLogic.HeplerInterfaces;
+using static vkBot.Request.EventRequest;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using vkBot.HelperElements;
 
 namespace EventsLogic.Basic
 {
@@ -10,12 +12,12 @@ namespace EventsLogic.Basic
     {
         public static List<Event> ActualEvents = new List<Event>();
 
-        public static SortedList<string, int> OnCreatedEvents = new SortedList<string, int>();
+        public static SortedList<long, int> OnCreatedEvents = new SortedList<long, int>();
 
         #region свойства
 
         public int Id { get; set; }
-        public string Author { get; set; }
+        public long Author { get; set; }
         public DateTime CreateTime { get; set; }
         public int Occup { get; set; }
 
@@ -25,32 +27,32 @@ namespace EventsLogic.Basic
             set
             {
                 _isActual = value;
-                EventsDatabase.EventSetParams(Id, isActual: value);
+                EventRequest.Set(Id, isActual: value);
             }
         }
         private bool _isActual;
 
-        public string? Name
+        public string Name
         {
             get { return _name; }
             set
             {
                 _name = value;
-                EventsDatabase.EventSetParams(Id, name: value);
+                EventRequest.Set(Id, name: value);
             }
         }
-        private string? _name;
+        private string _name;
 
-        public string? Place
+        public string Place
         {
             get { return _place; }
             set
             {
                 _place = value;
-                EventsDatabase.EventSetParams(Id, place: value);
+                EventRequest.Set(Id, place: value);
             }
         }
-        private string? _place;
+        private string _place;
 
         public int Seats
         {
@@ -58,21 +60,21 @@ namespace EventsLogic.Basic
             set
             {
                 _seats = value;
-                EventsDatabase.EventSetParams(Id, seats: value);
+                EventRequest.Set(Id, seats: value);
             }
         }
         private int _seats;
 
-        public string? Describe
+        public string Describe
         {
             get { return _describe; }
             set
             {
                 _describe = value;
-                EventsDatabase.EventSetParams(Id, describe: value);
+                EventRequest.Set(Id, describe: value);
             }
         }
-        private string? _describe;
+        private string _describe;
 
         public DateTime StartTime
         {
@@ -80,7 +82,7 @@ namespace EventsLogic.Basic
             set
             {
                 _startTime = value;
-                EventsDatabase.EventSetParams(Id, startTime: value);
+                EventRequest.Set(Id, startTime: value);
             }
         }
         private DateTime _startTime;
@@ -91,7 +93,7 @@ namespace EventsLogic.Basic
             set
             {
                 _endTime = value;
-                EventsDatabase.EventSetParams(Id, endTime: value);
+                EventRequest.Set(Id, endTime: value);
             }
         }
         private DateTime _endTime;
@@ -100,7 +102,7 @@ namespace EventsLogic.Basic
 
         #region конструкторы
 
-        public Event(string author)
+        public Event(long author)
         {
             Author = author;
         }
@@ -108,9 +110,9 @@ namespace EventsLogic.Basic
         #endregion
 
 
-        public bool CheackReady()
+        public bool Ready()
         {
-            if (string.IsNullOrWhiteSpace(Name)) return false;
+            if (_name.IsNaN()) return false;
             if (StartTime < DateTime.Now) return false;
             if (EndTime < StartTime) return false;
             if (Seats < 1) return false;
@@ -118,7 +120,7 @@ namespace EventsLogic.Basic
         }
 
 
-        public static Event? GetEventFromActual(string? insexStr)
+        public static Event GetEventFromActual(string insexStr)
         {
             if (int.TryParse(insexStr, out int index))
             {
@@ -130,11 +132,15 @@ namespace EventsLogic.Basic
 
         public static bool operator ==(Event a, Event b)
         {
+            if (a is Event && b is null) return false;
+            if (a is null && b is Event) return false;
             if (a is Event && b is Event) return a.Id == b.Id;
             return false;
         }
         public static bool operator !=(Event a, Event b)
         {
+            if (a is Event && b is null) return true;
+            if (a is null && b is Event) return true;
             if (a is Event && b is Event) return a.Id != b.Id;
             return true;
         }

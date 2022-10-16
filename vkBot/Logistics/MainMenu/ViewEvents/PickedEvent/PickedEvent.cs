@@ -13,7 +13,7 @@ namespace vkBot.Logistics.MainMenu.ViewEvents.PickedEvent
     {
         internal static void Go(Client client, MessageReceivedEventArgs e)
         {
-            var @event = new Event(String.Empty);
+            var @event = new Event(0);
 
             switch (e.Message.Text)
             {

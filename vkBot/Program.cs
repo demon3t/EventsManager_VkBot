@@ -1,5 +1,4 @@
 ﻿using EventsLogic.Basic;
-using EventsLogic.DatabaseRequest;
 using System;
 using System.Linq;
 using vkBot.Logistics;
@@ -10,6 +9,8 @@ using vkBot.Logistics.MainMenu.ViewEvents.PickedEvent;
 using VkBotFramework;
 using VkBotFramework.Models;
 using VkNet.Model.RequestParams;
+using static vkBot.Request.ClientRequest;
+using static vkBot.Request.EventRequest;
 
 namespace vkBot
 {
@@ -38,47 +39,45 @@ namespace vkBot
         static void Main(string[] args)
         {
             vkBot.OnBotStarted += VkBot_OnBotStarted;
-
             vkBot.Start();
         }
 
+
         private static void VkBot_OnBotStarted(object sender, EventArgs e)
         {
-            Console.WriteLine($"{DateTime.Now}: Bot started");                   // оповещение запуска бота
-
-            Client.Admins = ClientDatabase.FindUsers(isAdmin: true);              // загрузка списка Адмистроторов и Помощников
-            Event.ActualEvents = EventsDatabase.FindEvents(isActual: true);
+            Client.Admins.AddRange(GetParams(isAdmin: true));                          // загрузка списка Адмистроторов и Помощников
+            Event.ActualEvents.AddRange(GetParam(isActual: true));
 
             vkBot.OnMessageReceived += VkBot_OnMessageReceived;
+            Console.WriteLine($"{DateTime.Now}: Bot started");                   // оповещение успешного запуска бота
         }
 
         private static void VkBot_OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
-
-            if (ClientDatabase.CheckUserToId(e.Message.PeerId.ToString()))
+            Client client = Client.Admins.First(x => x.Id == e.Message.PeerId);
+            if (client is null && !Existence(out client, (long)e.Message.PeerId))
             {
                 RegisterUser(e);
+                client = Get((long)e.Message.PeerId);
             }
 
-            var person = ClientDatabase.FindUsers(id: e.Message.PeerId.ToString()).First();
+            Console.WriteLine($"{DateTime.Now.ToString().Replace(' ', '/')}  {client.Surname} {client.Name} {client.Id} : {e.Message.Text}");
 
-            Console.WriteLine($"{DateTime.Now.ToString().Replace(' ', '/')}  {person.Surname} {person.Name} {person.Id} : {e.Message.Text}");
-
-            switch (person.Major)
+            switch (client.Major)
             {
                 case (int)Major.FirstOccurrence: // ready
                     {
-                        Entry.Go(person, e);
+                        Entry.Go(client, e);
                         return;
                     }
                 case (int)Major.Normal: // ready
                     {
-                        MainMenu.Go(person, e);
+                        MainMenu.Go(client, e);
                         return;
                     }
                 case (int)Major.ViewEvents: // ready
                     {
-                        ViewEvents.Go(person, e);
+                        ViewEvents.Go(client, e);
                         return;
                     }
                 case (int)Major.MyEvents:
@@ -87,22 +86,21 @@ namespace vkBot
                     }
                 case (int)Major.CreateEvent: // ready
                     {
-                        EventEditor.Go(person, e);
+                        EventEditor.Go(client, e);
                         return;
                     }
                 case (int)Major.EdingEvent: // ready
                     {
-                        EventEditor.Go(person, e);
+                        EventEditor.Go(client, e);
                         return;
                     }
                 case (int)Major.PickedEvent: // ready
                     {
-                        PickedEvent.Go(person, e);
+                        PickedEvent.Go(client, e);
                         return;
                     }
                 default: return;
             }
-
         }
 
         private static void RegisterUser(MessageReceivedEventArgs e)
@@ -113,7 +111,7 @@ namespace vkBot
                 GroupId = (ulong?)e.Message.PeerId,
                 Extended = true,
             };
-            ClientDatabase.AddUser(e.Message.PeerId.ToString(),
+            Add((long)e.Message.PeerId,
                 vkBot.Api.Messages.GetConversations(param).Profiles[0].FirstName,
                 vkBot.Api.Messages.GetConversations(param).Profiles[0].LastName, false);
         }

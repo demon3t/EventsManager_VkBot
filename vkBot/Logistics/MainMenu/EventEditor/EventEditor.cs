@@ -4,8 +4,12 @@ using EventsLogic.HelperClasses;
 using VkNet.Model.Keyboard;
 using VkBotFramework.Models;
 using vkBot.Logistics.MainMenu.ViewEvents.PickedEvent;
+using vkBot.HelperElements;
+using vkBot.Request;
 using static vkBot.Program;
+using static vkBot.General.KeyboardGeneral;
 using static vkBot.General.MessageGeneral;
+using static vkBot.Request.EventRequest;
 
 namespace vkBot.Logistics.MainMenu.EventEditor
 {
@@ -23,8 +27,14 @@ namespace vkBot.Logistics.MainMenu.EventEditor
 
         internal static void Go(Client client, MessageReceivedEventArgs e, Event @event = null)
         {
-            if (@event == null)
-                @event = new Event("NaN");
+            if (Event.OnCreatedEvents.TryGetValue(client.Id, out int eventId))
+            {
+                @event = Get(eventId);
+            }
+            else
+            {
+                Add(out @event, client.Id);
+            }
 
             switch (e.Message.Text)
             {
@@ -93,41 +103,49 @@ namespace vkBot.Logistics.MainMenu.EventEditor
 
         internal static void This(Client client, MessageReceivedEventArgs e, Event @event)
         {
-            string message = client.Minor == (int)Major.CreateEvent ?
+            string message = client.Major == (int)Major.Normal ?
                 "Создание нового мероприятия" :
                 "Редактирование мероприятия";
 
-            SendMessage(e, message, KeyboardThis(client));
+            client.Major = client.Major == (int)Major.Normal ?
+                (int)Major.CreateEvent :
+                (int)Major.EdingEvent;
+
+            if (!Event.OnCreatedEvents.ContainsKey(client.Id))
+                Event.OnCreatedEvents.Add(client.Id, @event.Id);
+
+            SendMessage(e, message, KeyboardThis(client, @event));
         }
 
         #region Response options
         private static void Create(Client client, MessageReceivedEventArgs e, Event @event)
         {
-
+            Event.OnCreatedEvents.Remove(client.Id);
+            BackToMainMenu(client, e);
         }
 
-        #region Шаблоны для параметров
-        //private static void Name(Client client)
+        #region SetParam
+        //private static void Name(Client client, MessageReceivedEventArgs e, Event @event)
         //{
 
         //}
-        //private static void Description(Client client)
+        //private static void Description(Client client, MessageReceivedEventArgs e, Event @event)
         //{
 
         //}
-        //private static void StartTime(Client client)
+        //private static void StartTime(Client client, MessageReceivedEventArgs e, Event @event)
         //{
 
         //}
-        //private static void EndTime(Client client)
+        //private static void EndTime(Client client, MessageReceivedEventArgs e, Event @event)
         //{
 
         //}
-        //private static void Seats(Client client)
+        //private static void Seats(Client client, MessageReceivedEventArgs e, Event @event)
         //{
 
         //}
-        //private static void Place(Client client)
+        //private static void Place(Client client, MessageReceivedEventArgs e, Event @event)
         //{
 
         //}
@@ -140,41 +158,52 @@ namespace vkBot.Logistics.MainMenu.EventEditor
                 case (int)Param.Name:
                     {
                         @event.Name = e.Message.Text;
-                        return;
+                        break;
                     }
                 case (int)Param.Describe:
                     {
                         @event.Describe = e.Message.Text;
-                        return;
+                        break;
                     }
                 case (int)Param.StartTime:
                     {
                         if (e.Message.Text.AdvansedParse(out DateTime dateTime))
                             @event.StartTime = dateTime;
-                        return;
+                        break;
                     }
                 case (int)Param.EndTime:
                     {
                         if (e.Message.Text.AdvansedParse(out DateTime dateTime))
                             @event.EndTime = dateTime;
-                        return;
+                        break;
                     }
                 case (int)Param.Seats:
                     {
                         if (int.TryParse(e.Message.Text, out int seats))
                             @event.Seats = seats;
-                        return;
+                        break;
                     }
                 case (int)Param.Place:
                     {
                         @event.Place = e.Message.Text;
-                        return;
+                        break;
                     }
             }
+            Continue(client, e, @event);
+        }
+
+        private static void Continue(Client client, MessageReceivedEventArgs e, Event @event)
+        {
+            string message = @event.Ready() ?
+                "Всё корректно" :
+                "Не всё корректно";
+
+            SendMessage(e, message, KeyboardThis(client, @event));
         }
 
         private static void BackToMainMenu(Client client, MessageReceivedEventArgs e)
         {
+            if (client.Major != (int)Major.CreateEvent) return;
             client.Major = (int)Major.Normal;
             client.Minor = 0;
             MainMenu.This(client, e);
@@ -182,17 +211,31 @@ namespace vkBot.Logistics.MainMenu.EventEditor
 
         private static void BackToPickedEvent(Client client, MessageReceivedEventArgs e, Event @event)
         {
+            if (client.Major != (int)Major.EdingEvent) return;
+            Event.OnCreatedEvents.Remove(client.Id);
             client.Major = (int)Major.PickedEvent;
             PickedEvent.This(client, e, @event);
         }
 
         #endregion
 
-        private static KeyboardBuilder KeyboardThis(Client person)
+        private static KeyboardBuilder KeyboardThis(Client client, Event @event)
         {
             KeyboardBuilder keyboard = new KeyboardBuilder();
 
+            if (client.Major == (int)Major.CreateEvent && @event.Ready()) keyboard.AddButton("Создать", "", Primary).AddLine();
 
+            keyboard.AddButton("Название", "", @event.Name.IsNaN() ? Negative : Positive);
+            keyboard.AddButton("Опиcание", "", @event.Name.IsNaN() ? Default : Positive).AddLine();
+            keyboard.AddButton("Время начала", "", @event.StartTime < DateTime.Now ? Negative : Positive);
+            keyboard.AddButton("Время конца", "", @event.EndTime < DateTime.Now || @event.EndTime < @event.StartTime ? Negative : Positive).AddLine();
+            keyboard.AddButton("Число волонтёров", "", @event.Seats < 1 ? Negative : Positive);
+            keyboard.AddButton("Место", "", @event.Name.IsNaN() ? Default : Positive).AddLine();
+
+            if (client.Major == (int)Major.CreateEvent)
+                keyboard.AddButton("Назад", "", Default);
+            else
+                keyboard.AddButton("Вернуться", "", Default);
 
             return keyboard;
         }

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EventsLogic.HelperClasses
+namespace vkBot.HelperElements
 {
-    public static class StringExpansion
+    internal static class StringExpansion
     {
-        public static bool AdvansedParse(this string str, out DateTime result)
+        internal static bool AdvansedParse(this string str, out DateTime result)
         {
             result = DateTime.Now;
 
@@ -95,9 +95,9 @@ namespace EventsLogic.HelperClasses
         }
 
 
-        public static bool IsNaN(this string str)
+        internal static bool IsNaN(this string str)
         {
-            return str == "NaN" ? true : false;
+            return str == "NaN" || string.IsNullOrEmpty(str) ? true : false;
         }
     }
 }

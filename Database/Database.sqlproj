@@ -6,7 +6,7 @@
     <Name>Database</Name>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
-    <ProjectGuid>{fa971e84-36e9-4ab7-b46a-d88a4703164e}</ProjectGuid>
+    <ProjectGuid>{97aaf3d1-014e-4921-93b1-67d979394f1a}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
@@ -24,6 +24,8 @@
     <TargetDatabaseSet>True</TargetDatabaseSet>
     <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
     <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+    <GenerateCreateScript>True</GenerateCreateScript>
+    <DelayedDurability>FORCED</DelayedDurability>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -58,25 +60,29 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
-    <Folder Include="Security\" />
-    <Folder Include="Server Objects\" />
-    <Folder Include="EventsProcedures" />
-    <Folder Include="UsersProcedures" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="dbo\Stored Procedures\Event" />
+    <Folder Include="dbo\Stored Procedures\User" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Security\sa.sql" />
-    <Build Include="Security\DESKTOP-EN1VBB9_Nipa.sql" />
-    <Build Include="Security\NT SERVICE_SQLWriter.sql" />
-    <Build Include="Security\RoleMemberships.sql" />
-    <Build Include="Server Objects\AlwaysOn_health.sql" />
-    <Build Include="Server Objects\QuickSessionStandard.sql" />
-    <Build Include="Users.sql" />
-    <Build Include="Events.sql" />
-    <Build Include="EventsProcedures\EventAdd.sql" />
-    <Build Include="EventsProcedures\EventFindByParams.sql" />
-    <Build Include="EventsProcedures\EventSetParams.sql" />
-    <Build Include="EventsProcedures\EventLastId.sql" />
-    <Build Include="UsersProcedures\UserAdd.sql" />
-    <Build Include="UsersProcedures\UserFindByParams.sql" />
+    <Build Include="dbo\Tables\Events.sql" />
+    <Build Include="dbo\Tables\Users.sql" />
+    <Build Include="dbo\Stored Procedures\Event\EventAdd.sql" />
+    <Build Include="dbo\Stored Procedures\Event\EventFindByParams.sql" />
+    <Build Include="dbo\Stored Procedures\Event\EventSetParams.sql" />
+    <Build Include="dbo\Stored Procedures\Event\EventsLastId.sql" />
+    <Build Include="dbo\Stored Procedures\User\UserAdd.sql" />
+    <Build Include="dbo\Stored Procedures\User\UserFindByParams.sql" />
+    <Build Include="dbo\Stored Procedures\User\CheckKeyUser.sql" />
+    <Build Include="dbo\Stored Procedures\User\UserSetParams.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">
+      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>vkDadabase</DatabaseVariableLiteralValue>
+    </ArtifactReference>
   </ItemGroup>
 </Project>
