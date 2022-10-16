@@ -1,15 +1,14 @@
 ﻿using System;
 using EventsLogic.Basic;
-using EventsLogic.HelperClasses;
 using VkNet.Model.Keyboard;
 using VkBotFramework.Models;
 using vkBot.Logistics.MainMenu.ViewEvents.PickedEvent;
-using vkBot.HelperElements;
 using vkBot.Request;
 using static vkBot.Program;
 using static vkBot.General.KeyboardGeneral;
 using static vkBot.General.MessageGeneral;
 using static vkBot.Request.EventRequest;
+using vkBot.HelperElements.Classes;
 
 namespace vkBot.Logistics.MainMenu.EventEditor
 {
@@ -27,13 +26,18 @@ namespace vkBot.Logistics.MainMenu.EventEditor
 
         internal static void Go(Client client, MessageReceivedEventArgs e, Event @event = null)
         {
-            if (Event.OnCreatedEvents.TryGetValue(client.Id, out int eventId))
-            {
-                @event = Get(eventId);
-            }
-            else
+            if (client.Major == (int)Major.Normal)
             {
                 Add(out @event, client.Id);
+                Event.OnCreatedEvents.Add(client, @event);
+            }
+            else if (client.Major == (int)Major.PickedEvent)
+            {
+                Event.OnCreatedEvents.Add(client, @event);
+            }
+            else if (client.Major == (int)Major.CreateEvent || client.Major == (int)Major.EdingEvent)
+            {
+                Event.OnCreatedEvents.TryGetValue(client, out @event);
             }
 
             switch (e.Message.Text)
@@ -111,16 +115,13 @@ namespace vkBot.Logistics.MainMenu.EventEditor
                 (int)Major.CreateEvent :
                 (int)Major.EdingEvent;
 
-            if (!Event.OnCreatedEvents.ContainsKey(client.Id))
-                Event.OnCreatedEvents.Add(client.Id, @event.Id);
-
             SendMessage(e, message, KeyboardThis(client, @event));
         }
 
         #region Response options
         private static void Create(Client client, MessageReceivedEventArgs e, Event @event)
         {
-            Event.OnCreatedEvents.Remove(client.Id);
+            Event.OnCreatedEvents.Remove(client);
             BackToMainMenu(client, e);
         }
 
@@ -212,7 +213,7 @@ namespace vkBot.Logistics.MainMenu.EventEditor
         private static void BackToPickedEvent(Client client, MessageReceivedEventArgs e, Event @event)
         {
             if (client.Major != (int)Major.EdingEvent) return;
-            Event.OnCreatedEvents.Remove(client.Id);
+            Event.OnCreatedEvents.Remove(client);
             client.Major = (int)Major.PickedEvent;
             PickedEvent.This(client, e, @event);
         }

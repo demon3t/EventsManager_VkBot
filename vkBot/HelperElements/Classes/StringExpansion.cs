@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace vkBot.HelperElements
+namespace vkBot.HelperElements.Classes
 {
     internal static class StringExpansion
     {
@@ -10,7 +10,7 @@ namespace vkBot.HelperElements
         {
             result = DateTime.Now;
 
-            if (String.IsNullOrWhiteSpace(str)) return false;
+            if (string.IsNullOrWhiteSpace(str)) return false;
             if (DateTime.TryParse(str, out result))
             {
                 return true;
@@ -65,7 +65,7 @@ namespace vkBot.HelperElements
         {
             result = 0;
 
-            if (String.IsNullOrWhiteSpace(str)) return false;
+            if (string.IsNullOrWhiteSpace(str)) return false;
 
             string resStr = string.Empty;
             int count = 0;

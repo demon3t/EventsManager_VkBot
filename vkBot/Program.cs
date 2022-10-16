@@ -1,6 +1,8 @@
 ﻿using EventsLogic.Basic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using vkBot.Logistics;
 using vkBot.Logistics.MainMenu;
 using vkBot.Logistics.MainMenu.EventEditor;
@@ -11,14 +13,12 @@ using VkBotFramework.Models;
 using VkNet.Model.RequestParams;
 using static vkBot.Request.ClientRequest;
 using static vkBot.Request.EventRequest;
+using vkBot.HelperElements.Classes;
 
 namespace vkBot
 {
     internal class Program
     {
-        /// <summary>
-        /// API VKBot
-        /// </summary>
         public readonly static VkBot vkBot = new VkBot(config.Token, config.URL);
 
         public enum Major
@@ -39,13 +39,14 @@ namespace vkBot
         static void Main(string[] args)
         {
             vkBot.OnBotStarted += VkBot_OnBotStarted;
+
             vkBot.Start();
         }
 
 
         private static void VkBot_OnBotStarted(object sender, EventArgs e)
         {
-            Client.Admins.AddRange(GetParams(isAdmin: true));                          // загрузка списка Адмистроторов и Помощников
+            Client.Admins.AddRange(GetParams(isAdmin: true));                    // загрузка списка Адмистроторов и Помощников
             Event.ActualEvents.AddRange(GetParam(isActual: true));
 
             vkBot.OnMessageReceived += VkBot_OnMessageReceived;
@@ -54,7 +55,7 @@ namespace vkBot
 
         private static void VkBot_OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            Client client = Client.Admins.First(x => x.Id == e.Message.PeerId);
+            Client client = Client.Admins.GetValueOrDefault((long)e.Message.PeerId);
             if (client is null && !Existence(out client, (long)e.Message.PeerId))
             {
                 RegisterUser(e);

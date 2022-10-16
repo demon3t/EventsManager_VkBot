@@ -126,7 +126,7 @@ namespace vkBot.Request
         internal static bool Existence(out Client client, long id)
         {
             client = Get(id) as Client;
-            if (client == null) return false;
+            if (client is null) return false;
             return true;
         }
     }

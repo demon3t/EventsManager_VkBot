@@ -1,15 +1,14 @@
-﻿using EventsLogic.HelperClasses;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using vkBot.HelperElements;
+using vkBot.HelperElements.Classes;
 using static vkBot.Request.ClientRequest;
 
 namespace EventsLogic.Basic
 {
     public class Client
     {
-        public static List<Client> Admins = new List<Client>();
+        public static SortedList<long, Client> Admins = new SortedList<long, Client>();
 
         #region свойства
 

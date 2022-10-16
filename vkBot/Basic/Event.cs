@@ -1,18 +1,18 @@
 ﻿using vkBot.Request;
-using EventsLogic.HeplerInterfaces;
 using static vkBot.Request.EventRequest;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using vkBot.HelperElements.Classes;
 using vkBot.HelperElements;
 
 namespace EventsLogic.Basic
 {
-    public class Event : IListDataTime
+    public class Event : IDateTimeSort
     {
         public static List<Event> ActualEvents = new List<Event>();
 
-        public static SortedList<long, int> OnCreatedEvents = new SortedList<long, int>();
+        public static SortedList<Client, Event> OnCreatedEvents = new SortedList<Client, Event>();
 
         #region свойства
 
@@ -20,6 +20,8 @@ namespace EventsLogic.Basic
         public long Author { get; set; }
         public DateTime CreateTime { get; set; }
         public int Occup { get; set; }
+
+        public DateTime SortDateTime { get { return _startTime; } }
 
         public bool IsActual
         {
@@ -170,6 +172,6 @@ namespace EventsLogic.Basic
 
         #endregion
 
-        public DateTime SortDateTime() => StartTime;
+
     }
 }
